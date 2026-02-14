@@ -40,8 +40,9 @@ const Index = () => {
   });
 
   const collageImages = [collage1, collage2, collage3, collage4, collage5, collage6];
-  const totalWidth = collageImages.length * 520; // approx width per image + gap
-  const x = useTransform(scrollYProgress, [0, 1], [0, -(totalWidth - (typeof window !== "undefined" ? window.innerWidth : 1200))]);
+  const totalWidth = 2100; // canvas width covering all images
+  const scrollDistance = totalWidth - (typeof window !== "undefined" ? window.innerWidth : 1200) + 200;
+  const x = useTransform(scrollYProgress, [0, 0.7], [0, -scrollDistance]);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 2200);
@@ -105,7 +106,7 @@ const Index = () => {
         </section>
 
         {/* Horizontal Scroll Collage */}
-        <section ref={collageRef} className="relative" style={{ height: `${totalWidth}px` }}>
+        <section ref={collageRef} className="relative" style={{ height: "200vh" }}>
           <div className="sticky top-0 h-screen overflow-hidden">
             <motion.div
               className="relative h-full"
