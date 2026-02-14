@@ -106,25 +106,40 @@ const Index = () => {
 
         {/* Horizontal Scroll Collage */}
         <section ref={collageRef} className="relative" style={{ height: `${totalWidth}px` }}>
-          <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+          <div className="sticky top-0 h-screen overflow-hidden">
             <motion.div
-              style={{ x }}
-              className="flex gap-6 px-8"
+              className="relative h-full"
+              style={{ x, width: `${totalWidth}px` }}
             >
-              {collageImages.map((src, i) => (
-                <div
-                  key={i}
-                  className={`shrink-0 overflow-hidden rounded-sm ${
-                    i % 3 === 2 ? "w-[340px] h-[500px]" : "w-[480px] h-[360px]"
-                  }`}
-                >
-                  <img
-                    src={src}
-                    alt={`Our story ${i + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
+              {/* Large left-aligned image */}
+              <div className="absolute left-[40px] top-[10%] w-[500px] h-[70%] overflow-hidden">
+                <img src={collageImages[0]} alt="Our story 1" className="w-full h-full object-cover" />
+              </div>
+
+              {/* Small top-center image */}
+              <div className="absolute left-[620px] top-[5%] w-[280px] h-[240px] overflow-hidden">
+                <img src={collageImages[1]} alt="Our story 2" className="w-full h-full object-cover" />
+              </div>
+
+              {/* Small right-top image */}
+              <div className="absolute left-[1050px] top-[8%] w-[220px] h-[300px] overflow-hidden">
+                <img src={collageImages[2]} alt="Our story 3" className="w-full h-full object-cover" />
+              </div>
+
+              {/* Medium center image */}
+              <div className="absolute left-[780px] top-[38%] w-[350px] h-[350px] overflow-hidden">
+                <img src={collageImages[3]} alt="Our story 4" className="w-full h-full object-cover" />
+              </div>
+
+              {/* Small bottom-right image */}
+              <div className="absolute left-[1200px] top-[50%] w-[240px] h-[320px] overflow-hidden">
+                <img src={collageImages[4]} alt="Our story 5" className="w-full h-full object-cover" />
+              </div>
+
+              {/* Large far-right image */}
+              <div className="absolute left-[1550px] top-[15%] w-[460px] h-[60%] overflow-hidden">
+                <img src={collageImages[5]} alt="Our story 6" className="w-full h-full object-cover" />
+              </div>
             </motion.div>
           </div>
         </section>
