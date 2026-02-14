@@ -28,7 +28,7 @@ const LoadingScreen = ({ isLoading }: LoadingScreenProps) => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            J & A
+            M & G
           </motion.p>
         </motion.div>
       )}
