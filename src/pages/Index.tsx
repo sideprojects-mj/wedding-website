@@ -36,7 +36,7 @@ const Index = () => {
 
   const { scrollYProgress } = useScroll({
     target: collageRef,
-    offset: ["start start", "end end"],
+    offset: ["start end", "end end"],
   });
 
   const collageImages = [collage1, collage2, collage3, collage4, collage5, collage6];
