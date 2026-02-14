@@ -1,13 +1,18 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { MapPin, Calendar } from "lucide-react";
 import heroImage from "@/assets/couple-hero.jpg";
+import collage1 from "@/assets/collage-1.jpg";
+import collage2 from "@/assets/collage-2.jpg";
+import collage3 from "@/assets/collage-3.jpg";
+import collage4 from "@/assets/collage-4.jpg";
+import collage5 from "@/assets/collage-5.jpg";
+import collage6 from "@/assets/collage-6.jpg";
 import LoadingScreen from "@/components/LoadingScreen";
 import ScrollReveal from "@/components/ScrollReveal";
 import CoupleAnimation from "@/components/CoupleAnimation";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
 const WEDDING_DATE = new Date("2025-10-18T16:00:00");
 
 const useCountdown = (target: Date) => {
@@ -27,6 +32,16 @@ const useCountdown = (target: Date) => {
 const Index = () => {
   const [loading, setLoading] = useState(true);
   const countdown = useCountdown(WEDDING_DATE);
+  const collageRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: collageRef,
+    offset: ["start start", "end end"],
+  });
+
+  const collageImages = [collage1, collage2, collage3, collage4, collage5, collage6];
+  const totalWidth = collageImages.length * 520; // approx width per image + gap
+  const x = useTransform(scrollYProgress, [0, 1], [0, -(totalWidth - (typeof window !== "undefined" ? window.innerWidth : 1200))]);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 2200);
@@ -87,6 +102,31 @@ const Index = () => {
               </div>
             </div>
           </ScrollReveal>
+        </section>
+
+        {/* Horizontal Scroll Collage */}
+        <section ref={collageRef} className="relative" style={{ height: `${totalWidth}px` }}>
+          <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+            <motion.div
+              style={{ x }}
+              className="flex gap-6 px-8"
+            >
+              {collageImages.map((src, i) => (
+                <div
+                  key={i}
+                  className={`shrink-0 overflow-hidden rounded-sm ${
+                    i % 3 === 2 ? "w-[340px] h-[500px]" : "w-[480px] h-[360px]"
+                  }`}
+                >
+                  <img
+                    src={src}
+                    alt={`Our story ${i + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </section>
 
         {/* Couple coming together animation */}
