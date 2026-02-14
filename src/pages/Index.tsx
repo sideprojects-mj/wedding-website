@@ -36,7 +36,7 @@ const Index = () => {
 
   const { scrollYProgress } = useScroll({
     target: collageRef,
-    offset: ["start end", "end end"],
+    offset: ["start 0.6", "end end"],
   });
 
   const collageImages = [collage1, collage2, collage3, collage4, collage5, collage6];
@@ -67,7 +67,7 @@ const Index = () => {
           >
             <p className="text-sm uppercase tracking-[0.4em] text-foreground/80 mb-4">We're getting married</p>
             <h1 className="text-6xl md:text-8xl lg:text-9xl font-serif font-light text-foreground">
-              Jessica & Andrew
+              Grace & Mark
             </h1>
             <div className="mt-8 flex items-center justify-center gap-6 text-foreground/80">
               <span className="flex items-center gap-2">

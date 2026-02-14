@@ -20,7 +20,7 @@ const CoupleAnimation = () => {
         style={{ x: leftX }}
         className="text-6xl md:text-8xl font-serif italic text-primary"
       >
-        J
+        G
       </motion.div>
       <motion.div
         style={{ scale: heartScale, opacity: heartOpacity }}
@@ -32,7 +32,7 @@ const CoupleAnimation = () => {
         style={{ x: rightX }}
         className="text-6xl md:text-8xl font-serif italic text-primary"
       >
-        A
+        M
       </motion.div>
     </div>
   );
