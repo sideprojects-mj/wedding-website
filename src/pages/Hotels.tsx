@@ -5,7 +5,7 @@ import { MapPin, Star, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const hotels = [
-  { name: "The Meritage Resort & Spa", distance: "5 min from venue", stars: 5, price: "$$$", note: "Room block available — mention 'Jessica & Andrew Wedding' for a discounted rate." },
+  { name: "The Meritage Resort & Spa", distance: "5 min from venue", stars: 5, price: "$$$", note: "Room block available — mention 'Grace & Mark Wedding' for a discounted rate." },
   { name: "Napa Valley Marriott", distance: "10 min from venue", stars: 4, price: "$$", note: "Great value with complimentary breakfast." },
   { name: "The Westin Verasa", distance: "12 min from venue", stars: 4, price: "$$", note: "Walking distance to downtown Napa restaurants." },
   { name: "Carneros Resort and Spa", distance: "15 min from venue", stars: 5, price: "$$$$", note: "Luxury cottages with stunning vineyard views." },
