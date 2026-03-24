@@ -5,12 +5,6 @@ import { Clock } from "lucide-react";
 
 const events = [
   { time: "3:30 PM", title: "Guest Arrival", desc: "Welcome drinks and light refreshments on the terrace." },
-  { time: "4:00 PM", title: "Ceremony", desc: "Join us in the garden for the ceremony." },
-  { time: "5:00 PM", title: "Cocktail Hour", desc: "Enjoy cocktails and hors d'oeuvres by the fountain." },
-  { time: "6:30 PM", title: "Reception & Dinner", desc: "Dinner, toasts, and celebration in the grand ballroom." },
-  { time: "8:00 PM", title: "First Dance", desc: "The couple takes the floor." },
-  { time: "8:30 PM", title: "Dancing & Festivities", desc: "Dance the night away!" },
-  { time: "11:00 PM", title: "Sparkler Send-Off", desc: "Send off the newlyweds in style." },
 ];
 
 const Schedule = () => (
