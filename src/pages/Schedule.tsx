@@ -1,5 +1,6 @@
 import PageHeader from "@/components/PageHeader";
 import ScrollReveal from "@/components/ScrollReveal";
+import WeddingGlobe from "@/components/WeddingGlobe";
 import { Clock } from "lucide-react";
 
 const events = [
@@ -32,6 +33,17 @@ const Schedule = () => (
         </ScrollReveal>
       ))}
     </div>
+
+    {/* Globe Section */}
+    <ScrollReveal>
+      <div className="max-w-4xl mx-auto px-4 mt-16">
+        <p className="text-center text-sm uppercase tracking-[0.3em] text-muted-foreground mb-2">Wedding Location</p>
+        <h2 className="text-center text-3xl font-serif text-foreground mb-8">The Grand Estate, Napa Valley</h2>
+        <div className="rounded-2xl overflow-hidden bg-[#0a0a1a]">
+          <WeddingGlobe />
+        </div>
+      </div>
+    </ScrollReveal>
   </main>
 );
 
