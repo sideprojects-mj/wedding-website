@@ -1,5 +1,6 @@
 import PageHeader from "@/components/PageHeader";
 import ScrollReveal from "@/components/ScrollReveal";
+import WeddingGlobe from "@/components/WeddingGlobe";
 import { Clock } from "lucide-react";
 
 const events = [
