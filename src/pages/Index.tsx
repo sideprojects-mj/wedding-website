@@ -13,7 +13,7 @@ import ScrollReveal from "@/components/ScrollReveal";
 import CoupleAnimation from "@/components/CoupleAnimation";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-const WEDDING_DATE = new Date("2025-10-18T16:00:00");
+const WEDDING_DATE = new Date("2026-09-26T15:00:00");
 
 const useCountdown = (target: Date) => {
   const [now, setNow] = useState(new Date());
@@ -36,7 +36,7 @@ const Index = () => {
 
   const { scrollYProgress } = useScroll({
     target: collageRef,
-    offset: ["start 0.6", "end end"],
+    offset: ["start 0.4", "end 0.8"],
   });
 
   const collageImages = [collage1, collage2, collage3, collage4, collage5, collage6];
@@ -72,12 +72,12 @@ const Index = () => {
             <div className="mt-8 flex items-center justify-center gap-6 text-foreground/80">
               <span className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                October 18, 2025
+                September 26, 2026
               </span>
               <span className="w-px h-5 bg-foreground/30" />
               <span className="flex items-center gap-2">
                 <MapPin className="w-4 h-4" />
-                The Grand Estate, Napa Valley
+                New Breunfolds, Texas
               </span>
             </div>
           </motion.div>
@@ -107,7 +107,7 @@ const Index = () => {
 
         {/* Horizontal Scroll Collage */}
         <section ref={collageRef} className="relative" style={{ height: "200vh" }}>
-          <div className="sticky top-0 h-screen overflow-hidden">
+          <div className="sticky top-0 h-screen overflow-hidden pt-20">
             <motion.div
               className="relative h-full"
               style={{ x, width: `${totalWidth}px` }}
@@ -149,7 +149,7 @@ const Index = () => {
         <section className="bg-background">
           <ScrollReveal>
             <p className="text-center text-sm uppercase tracking-[0.3em] text-muted-foreground pt-16">
-              Two hearts, one love
+              Two hearts, one body
             </p>
           </ScrollReveal>
           <CoupleAnimation />
