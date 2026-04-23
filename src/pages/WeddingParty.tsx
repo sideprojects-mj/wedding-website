@@ -3,18 +3,23 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { Card, CardContent } from "@/components/ui/card";
 
 const brideParty = [
-  { name: "Lucy Safranek", role: "Maid of Honor", relation: "Friend of the Bride" },
-  { name: "Miriam Skinner", role: "Maid of Honor", relation: "Friend of the Bride" },
+    { name: "Lucy Safranek", role: "Maid of Honor", relation: "Friend of the Bride" },
+    { name: "Miriam Skinner", role: "Maid of Honor", relation: "Friend of the Bride" },
+    { name: "Noemi Hernandez", role: "Bridesmaid", relation: "Friend of the Bride" },
+    { name: "Daisy Trujillo", role: "Bridesmaid", relation: "Friend of the Bride" },
+    { name: "Olivia Flores", role: "Bridesmaid", relation: "Friend of the Bride" },
+    { name: "Caroline Dodson", role: "Bridesmaid", relation: "Friend of the Bride" },
+    { name: "Sam Ketter", role: "Bridesmaid", relation: "Friend of the Bride" },
 ];
 
 const groomParty = [
   { name: "Jack Josephs", role: "Best Man", relation: "Brother of the Groom" },
   { name: "Sharbel Habchy", role: "Best Man", relation: "Friend of the Groom" },
-  { name: "Michael Josephs", role: "Groomsman", relation: "Brother of the Groom" },
   { name: "Christopher Josephs", role: "Groomsman", relation: "Brother of the Groom" },
   { name: "Patrick Josephs", role: "Groomsman", relation: "Brother of the Groom" },
+  { name: "Michael Josephs", role: "Groomsman", relation: "Brother of the Groom" },
   { name: "Andrew Kelly", role: "Groomsman", relation: "Friend of the Groom" },
-  { name: "Nathaniel ...", role: "Groomsman", relation: "Friend of the Groom" },
+  { name: "Francisco Rios", role: "Groomsman", relation: "Friend of the Groom" },
 ];
 
 const PartyCard = ({ person, delay }: { person: typeof brideParty[0]; delay: number }) => (
