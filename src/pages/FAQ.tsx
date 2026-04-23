@@ -3,8 +3,8 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const faqs = [
-  { q: "Can I bring a plus one?", a: "If your invitation includes a plus one, their name will appear on your RSVP. Due to venue capacity, we are unable to accommodate additional guests." },
-  { q: "Are children welcome?", a: "While we love your little ones, our wedding will be an adults-only celebration. We hope this gives you a chance to enjoy a night out!" },
+  { q: "Can I bring a plus one?", a: "If your invitation includes a plus one, their name will appear on your RSVP." },
+  { q: "Are children welcome?", a: "Our wedding will be an adults-only celebration." },
   { q: "Is there parking at the venue?", a: "Yes! Complimentary valet parking will be available for all guests." },
   { q: "What time should I arrive?", a: "We recommend arriving by 3:30 PM to be seated before the ceremony begins at 4:00 PM." },
   { q: "Will there be an open bar?", a: "Yes! We'll have a full open bar with wine, beer, cocktails, and non-alcoholic options." },

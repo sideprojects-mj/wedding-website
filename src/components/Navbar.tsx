@@ -25,7 +25,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
         <Link to="/" className="flex items-center gap-2">
           <img src={crest} alt="Crest" className="w-8 h-8" />
-          <span className="font-serif text-xl tracking-wide">J & A</span>
+          <span className="font-serif text-xl tracking-wide">M & G</span>
         </Link>
 
         {/* Desktop */}

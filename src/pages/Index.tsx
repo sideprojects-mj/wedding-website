@@ -149,7 +149,7 @@ const Index = () => {
         <section className="bg-background">
           <ScrollReveal>
             <p className="text-center text-sm uppercase tracking-[0.3em] text-muted-foreground pt-16">
-              Two hearts, one body
+              Two hearts, one flesh
             </p>
           </ScrollReveal>
           <CoupleAnimation />
