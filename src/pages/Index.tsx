@@ -43,152 +43,47 @@ const Reveal = ({
   </motion.div>
 );
 
-/* ---------------- Cinematic Reel ----------------
- * One sticky section that contains all hero scenes:
- *  - Card 0: hero photo (edge-to-edge → frames in) with crest + names + scroll cue
- *  - Cards 1..N: tagged moments with italic captions
- * Mirrors tessakevin.com: cream margins around rounded photo cards, horizontal
- * track translates left as you scroll vertically.
+/* ---------------- Hero ----------------
+ * Full-bleed hero photo with crest + names overlay. No frame, no polaroid.
  */
-const reelCards = [
-  { src: heroImg, label: "" },
-  { src: p1, label: "hill country sunsets" },
-  { src: p2, label: "coffee, always" },
-  { src: p3, label: "road trips & back roads" },
-  { src: p4, label: "sunday mornings" },
-  { src: p5, label: "late nights, no plans" },
-  { src: p6, label: "& everything in between" },
-];
+const Hero = () => (
+  <section id="top" className="relative h-screen w-full overflow-hidden bg-sepia">
+    <img
+      src={heroImg}
+      alt="Mark and Grace"
+      className="absolute inset-0 w-full h-full object-cover"
+    />
+    <div className="absolute inset-0 bg-sepia/20" />
 
-const CinematicReel = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
+      <motion.img
+        src={crest}
+        alt="Mark & Grace crest"
+        initial={{ opacity: 0, scale: 0.92 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.6, ease: "easeOut" }}
+        className="w-40 md:w-56 lg:w-72 drop-shadow-[0_8px_30px_hsl(25_25%_18%/0.3)]"
+      />
+    </div>
 
-  // First slice "frames in" the hero card; rest pans the horizontal track.
-  const FRAME_END = 0.1;
+    <div className="absolute bottom-[8vh] left-0 right-0 px-6 text-center">
+      <motion.h1
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.4, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="font-display text-[14vw] md:text-[12vw] lg:text-[10vw] leading-[0.9] text-cream lowercase tracking-[-0.02em]"
+        style={{ textShadow: "0 4px 30px hsl(25 25% 18% / 0.5)" }}
+      >
+        mark <span className="italic font-serif">&amp;</span> grace
+      </motion.h1>
+    </div>
 
-  const padX = useTransform(scrollYProgress, [0, FRAME_END], ["0vw", "5vw"]);
-  const padY = useTransform(scrollYProgress, [0, FRAME_END], ["0vh", "4vh"]);
-  const radius = useTransform(scrollYProgress, [0, FRAME_END], ["0px", "20px"]);
-
-  const overlayOpacity = useTransform(scrollYProgress, [0, FRAME_END * 0.85], [1, 0]);
-  const overlayY = useTransform(scrollYProgress, [0, FRAME_END], [0, -40]);
-
-  // Each card is 100vw wide, so translate by -((N-1)/N * 100%) to land on last card.
-  const trackX = useTransform(
-    scrollYProgress,
-    [FRAME_END, 1],
-    ["0%", `-${((reelCards.length - 1) / reelCards.length) * 100}%`]
-  );
-  const smoothX = useSpring(trackX, { damping: 40, stiffness: 100, mass: 0.4 });
-
-  return (
-    <section
-      ref={ref}
-      id="top"
-      className="relative"
-      style={{ height: `${reelCards.length * 100}vh` }}
-    >
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-cream">
-        <motion.div
-          style={{ x: smoothX, width: `${reelCards.length * 100}vw` }}
-          className="h-full flex items-stretch will-change-transform"
-        >
-          {reelCards.map((card, i) => (
-            <div key={i} className="relative shrink-0 h-screen" style={{ width: "100vw" }}>
-              {i === 0 ? (
-                <motion.div
-                  style={{
-                    paddingLeft: padX,
-                    paddingRight: padX,
-                    paddingTop: padY,
-                    paddingBottom: padY,
-                  }}
-                  className="relative w-full h-full"
-                >
-                  <motion.div
-                    style={{ borderRadius: radius }}
-                    className="relative w-full h-full overflow-hidden bg-sepia"
-                  >
-                    <img
-                      src={card.src}
-                      alt="Mark and Grace"
-                      className="w-full h-full object-cover"
-                    />
-
-                    {/* Crest centered */}
-                    <motion.div
-                      style={{ opacity: overlayOpacity, y: overlayY }}
-                      className="absolute inset-0 flex flex-col items-center justify-center px-6"
-                    >
-                      <motion.img
-                        src={crest}
-                        alt="Mark & Grace crest"
-                        initial={{ opacity: 0, scale: 0.92 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1.6, ease: "easeOut" }}
-                        className="w-40 md:w-56 lg:w-72 drop-shadow-[0_8px_30px_hsl(25_25%_18%/0.3)]"
-                      />
-                    </motion.div>
-
-                    {/* Massive script names */}
-                    <motion.div
-                      style={{ opacity: overlayOpacity, y: overlayY }}
-                      className="absolute bottom-[8vh] left-0 right-0 px-6 text-center"
-                    >
-                      <motion.h1
-                        initial={{ opacity: 0, y: 40 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1.4, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        className="font-display text-[14vw] md:text-[12vw] lg:text-[10vw] leading-[0.9] text-cream lowercase tracking-[-0.02em]"
-                        style={{ textShadow: "0 4px 30px hsl(25 25% 18% / 0.5)" }}
-                      >
-                        mark <span className="italic font-serif">&amp;</span> grace
-                      </motion.h1>
-                    </motion.div>
-
-                    {/* Scroll cue */}
-                    <motion.div
-                      style={{ opacity: overlayOpacity }}
-                      className="absolute bottom-6 right-8 flex items-center gap-2 text-cream/85"
-                    >
-                      <ChevronDown className="w-4 h-4 animate-bounce" />
-                      <span className="text-[10px] uppercase tracking-eyebrow">
-                        Scroll to explore
-                      </span>
-                    </motion.div>
-                  </motion.div>
-                </motion.div>
-              ) : (
-                <div className="px-[5vw] py-[4vh] w-full h-full">
-                  <div className="relative w-full h-full overflow-hidden rounded-[20px] bg-sepia/10">
-                    <img
-                      src={card.src}
-                      alt={card.label}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-sepia/40 via-transparent to-transparent" />
-                    <div className="absolute bottom-6 left-8 right-8 flex items-end justify-between gap-4">
-                      <p className="font-serif italic lowercase text-cream text-2xl md:text-4xl">
-                        {card.label}
-                      </p>
-                      <span className="text-cream/80 text-[10px] uppercase tracking-eyebrow whitespace-nowrap">
-                        {String(i).padStart(2, "0")} / {String(reelCards.length - 1).padStart(2, "0")}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-};
+    <div className="absolute bottom-6 right-8 flex items-center gap-2 text-cream/85">
+      <ChevronDown className="w-4 h-4 animate-bounce" />
+      <span className="text-[10px] uppercase tracking-eyebrow">Scroll to explore</span>
+    </div>
+  </section>
+);
 
 /* ---------------- Cordially invited ---------------- */
 const Invitation = () => (
@@ -410,51 +305,23 @@ const FAQ = () => (
  * cream margins. The card scales/zooms slightly as the user scrolls past;
  * the quote crossfades in at the apex.
  */
-const Closing = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  // Card "breathes" — zooms in slightly at the apex
-  const cardScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.92, 1, 0.92]);
-  const cardOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const quoteOpacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 1, 0]);
-  const quoteY = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [40, 0, -40]);
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
-
-  return (
-    <section ref={ref} className="relative h-[200vh] bg-cream">
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-cream">
-        <motion.div
-          style={{ scale: cardScale, opacity: cardOpacity }}
-          className="absolute inset-0 px-[5vw] py-[4vh]"
-        >
-          <div className="relative w-full h-full overflow-hidden rounded-[20px] bg-sepia">
-            <motion.img
-              style={{ y: imgY }}
-              src={heroImg}
-              alt="Mark and Grace"
-              className="w-full h-[120%] object-cover grayscale"
-            />
-            <div className="absolute inset-0 bg-sepia/35" />
-
-            <motion.div
-              style={{ opacity: quoteOpacity, y: quoteY }}
-              className="absolute inset-0 flex items-center justify-center px-6 text-center"
-            >
-              <p className="font-serif italic text-3xl md:text-6xl lg:text-7xl text-cream leading-tight max-w-4xl">
-                you're my <span className="text-gold">favorite</span> person <br />
-                to do anything with <br />
-                for the rest of my life.
-              </p>
-            </motion.div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
+const Closing = () => (
+  <section className="relative h-screen w-full overflow-hidden bg-cream">
+    <img
+      src={heroImg}
+      alt="Mark and Grace"
+      className="absolute inset-0 w-full h-full object-cover grayscale"
+    />
+    <div className="absolute inset-0 bg-sepia/45" />
+    <Reveal className="absolute inset-0 flex items-center justify-center px-6 text-center">
+      <p className="font-serif italic text-3xl md:text-6xl lg:text-7xl text-cream leading-tight max-w-4xl">
+        you're my <span className="text-gold">favorite</span> person <br />
+        to do anything with <br />
+        for the rest of my life.
+      </p>
+    </Reveal>
+  </section>
+);
 
 /* ---------------- Footer ---------------- */
 const Footer = () => (
@@ -481,7 +348,7 @@ const Index = () => {
     <SmoothScroll>
       <MinimalNav />
       <main className="bg-background overflow-x-hidden">
-        <CinematicReel />
+        <Hero />
         <Invitation />
         <LoveStory onPhotoClick={(src, caption) => setLightbox({ src, caption })} />
         <Venue />
