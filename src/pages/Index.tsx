@@ -378,6 +378,7 @@ const Index = () => {
       <MinimalNav />
       <main className="bg-background overflow-x-hidden">
         <Hero />
+        <PhotoCollageReveal />
         <Invitation />
         
         <Venue />
