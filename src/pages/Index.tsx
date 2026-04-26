@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown, MapPin } from "lucide-react";
 import {
   Accordion,
@@ -38,33 +38,49 @@ const Reveal = ({
 );
 
 /* ---------------- Hero ---------------- */
-const Hero = () => (
-  <section id="top" className="relative h-screen w-full overflow-hidden bg-sepia">
-    <img
-      src={heroImg}
-      alt="Mark and Grace"
-      className="absolute inset-0 w-full h-full object-cover"
-    />
-    <div className="absolute inset-0 bg-sepia/20" />
+const Hero = () => {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.75]);
+  const borderRadius = useTransform(scrollYProgress, [0, 1], ["0px", "32px"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.4]);
 
-    <div className="absolute bottom-[8vh] left-0 right-0 px-6 text-center">
-      <motion.h1
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.4, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="font-display text-[14vw] md:text-[12vw] lg:text-[10vw] leading-[0.9] text-cream lowercase tracking-[-0.02em]"
-        style={{ textShadow: "0 4px 30px hsl(25 25% 18% / 0.5)" }}
+  return (
+    <section id="top" ref={ref} className="relative h-screen w-full bg-cream">
+      <motion.div
+        style={{ scale, borderRadius, opacity }}
+        className="absolute inset-0 overflow-hidden bg-sepia origin-center will-change-transform"
       >
-        mark <span className="italic font-serif">&amp;</span> grace
-      </motion.h1>
-    </div>
+        <img
+          src={heroImg}
+          alt="Mark and Grace"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-sepia/20" />
 
-    <div className="absolute bottom-6 right-8 flex items-center gap-2 text-cream/85">
-      <ChevronDown className="w-4 h-4 animate-bounce" />
-      <span className="text-[10px] uppercase tracking-eyebrow">Scroll to explore</span>
-    </div>
-  </section>
-);
+        <div className="absolute bottom-[8vh] left-0 right-0 px-6 text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.4, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="font-display text-[14vw] md:text-[12vw] lg:text-[10vw] leading-[0.9] text-cream lowercase tracking-[-0.02em]"
+            style={{ textShadow: "0 4px 30px hsl(25 25% 18% / 0.5)" }}
+          >
+            mark <span className="italic font-serif">&amp;</span> grace
+          </motion.h1>
+        </div>
+
+        <div className="absolute bottom-6 right-8 flex items-center gap-2 text-cream/85">
+          <ChevronDown className="w-4 h-4 animate-bounce" />
+          <span className="text-[10px] uppercase tracking-eyebrow">Scroll to explore</span>
+        </div>
+      </motion.div>
+    </section>
+  );
+};
 
 /* ---------------- Cordially invited ---------------- */
 const Invitation = () => (
