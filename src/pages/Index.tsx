@@ -376,7 +376,7 @@ const Index = () => {
     <SmoothScroll>
       <MinimalNav />
       <main className="bg-background overflow-x-hidden">
-        <CinematicReel />
+        <Hero />
         <Invitation />
         <LoveStory onPhotoClick={(src, caption) => setLightbox({ src, caption })} />
         <Venue />
