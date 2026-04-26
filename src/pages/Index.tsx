@@ -134,51 +134,77 @@ const LoveStory = ({
 }: {
   onPhotoClick: (src: string, caption: string) => void;
 }) => (
-  <section className="py-24 md:py-32 px-6 bg-background">
-    <Reveal className="text-center mb-20">
-      <p className="text-xs uppercase tracking-eyebrow text-gold mb-4">the chapters</p>
-      <h2 className="font-serif text-5xl md:text-7xl text-sepia lowercase">our love story</h2>
-    </Reveal>
+  <section className="bg-cream pt-24 md:pt-32 pb-32">
+    <div className="max-w-[1400px] mx-auto px-6">
+      <h2 className="font-serif text-[18vw] md:text-[14vw] lg:text-[11vw] leading-[0.95] text-sepia lowercase mb-20 md:mb-32">
+        our love story
+      </h2>
 
-    <div className="max-w-6xl mx-auto space-y-32 md:space-y-40">
-      {stages.map((stage, i) => (
-        <div key={i}>
-          <Reveal>
-            <div className="max-w-2xl mb-12">
-              <p className="text-xs uppercase tracking-eyebrow text-gold mb-3">
-                chapter {String(i + 1).padStart(2, "0")}
-              </p>
-              <h3 className="font-serif text-3xl md:text-5xl text-sepia mb-5 lowercase italic">
-                {stage.title}
-              </h3>
-              <p className="text-sepia/75 leading-relaxed text-base md:text-lg">{stage.text}</p>
-            </div>
-          </Reveal>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-            {stage.photos.map((photo, j) => (
-              <Reveal key={j} delay={0.1 * j}>
-                <button
-                  onClick={() => onPhotoClick(photo.src, photo.caption)}
-                  className="group block w-full text-left cursor-zoom-in"
-                >
-                  <div className="aspect-[4/5] overflow-hidden">
-                    <img
-                      src={photo.src}
-                      alt={photo.caption}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </div>
-                  <p className="mt-3 text-xs uppercase tracking-eyebrow text-sepia/60 italic font-serif lowercase">
-                    {photo.caption}
-                  </p>
-                </button>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      ))}
+      <div className="space-y-32 md:space-y-48">
+        {stages.map((stage, i) => (
+          <LoveStoryStage
+            key={i}
+            index={i}
+            stage={stage}
+            onPhotoClick={onPhotoClick}
+          />
+        ))}
+      </div>
     </div>
   </section>
+);
+
+const LoveStoryStage = ({
+  index,
+  stage,
+  onPhotoClick,
+}: {
+  index: number;
+  stage: (typeof stages)[number];
+  onPhotoClick: (src: string, caption: string) => void;
+}) => (
+  <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-12 md:gap-20 items-start">
+    {/* Sticky text on the left */}
+    <div className="md:sticky md:top-32 self-start text-center md:text-right">
+      <p className="font-serif text-xl md:text-2xl text-sepia mb-4 lowercase">
+        <span className="italic">stage {index + 1}:</span>{" "}
+        {stage.title.replace(/^stage \d+: /, "")}
+      </p>
+      <p className="text-sepia/75 leading-relaxed text-base md:text-lg max-w-sm md:ml-auto">
+        {stage.text}
+      </p>
+    </div>
+
+    {/* Overlapping photo cards on the right */}
+    <div className="space-y-10 md:space-y-16">
+      {stage.photos.map((photo, j) => (
+        <motion.div
+          key={j}
+          initial={{ opacity: 0, y: 80 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-120px" }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+          className={j % 2 === 1 ? "md:ml-12" : ""}
+        >
+          <button
+            onClick={() => onPhotoClick(photo.src, photo.caption)}
+            className="group block w-full text-left cursor-zoom-in"
+          >
+            <div className="overflow-hidden rounded-[6px] shadow-[0_20px_50px_-20px_hsl(25_25%_18%/0.35)]">
+              <img
+                src={photo.src}
+                alt={photo.caption}
+                className="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+            <p className="mt-4 text-sepia/80 text-sm md:text-base lowercase">
+              {photo.caption}
+            </p>
+          </button>
+        </motion.div>
+      ))}
+    </div>
+  </div>
 );
 
 /* ---------------- Countdown ---------------- */
