@@ -101,7 +101,105 @@ const Hero = () => {
   );
 };
 
-/* ---------------- Cordially invited ---------------- */
+/* ---------------- Photo Collage Reveal ---------------- */
+type CollagePhoto = {
+  src: string;
+  /** final position as % of stage */
+  left: string;
+  top: string;
+  width: string;
+  rotate: number;
+  /** which side it flies in from */
+  from: "left" | "right" | "top" | "bottom";
+  /** when it animates in (0-1 of section progress) */
+  start: number;
+  end: number;
+  z: number;
+};
+
+const COLLAGE_PHOTOS: CollagePhoto[] = [
+  // top-left selfie
+  { src: p1, left: "4%",  top: "8%",  width: "26%", rotate: -2, from: "left",  start: 0.00, end: 0.35, z: 3 },
+  // bottom-left landscape (sunset cliffs)
+  { src: p2, left: "10%", top: "52%", width: "22%", rotate: 1.5, from: "left",  start: 0.10, end: 0.45, z: 2 },
+  // center hero (proposal)
+  { src: p3, left: "33%", top: "14%", width: "36%", rotate: 0,  from: "bottom", start: 0.20, end: 0.60, z: 5 },
+  // right upper (feet on rocks)
+  { src: p4, left: "70%", top: "28%", width: "24%", rotate: -1.5, from: "right", start: 0.35, end: 0.70, z: 3 },
+  // right lower (cliff lake)
+  { src: p6, left: "72%", top: "60%", width: "26%", rotate: 2,  from: "right", start: 0.50, end: 0.85, z: 4 },
+];
+
+const CollagePhotoItem = ({
+  photo,
+  progress,
+}: {
+  photo: CollagePhoto;
+  progress: ReturnType<typeof useScroll>["scrollYProgress"];
+}) => {
+  const offscreen = 140; // vw/vh percent
+  const fromX =
+    photo.from === "left" ? -offscreen : photo.from === "right" ? offscreen : 0;
+  const fromY =
+    photo.from === "top" ? -offscreen : photo.from === "bottom" ? offscreen : 0;
+
+  const x = useTransform(progress, [photo.start, photo.end], [fromX, 0], {
+    clamp: true,
+  });
+  const y = useTransform(progress, [photo.start, photo.end], [fromY, 0], {
+    clamp: true,
+  });
+  const opacity = useTransform(
+    progress,
+    [photo.start, photo.start + 0.05, photo.end],
+    [0, 1, 1],
+    { clamp: true }
+  );
+
+  return (
+    <motion.div
+      style={{
+        left: photo.left,
+        top: photo.top,
+        width: photo.width,
+        rotate: photo.rotate,
+        zIndex: photo.z,
+        x: useTransform(x, (v) => `${v}vw`),
+        y: useTransform(y, (v) => `${v}vh`),
+        opacity,
+      }}
+      className="absolute will-change-transform"
+    >
+      <img
+        src={photo.src}
+        alt=""
+        className="w-full h-auto rounded-[14px] shadow-[0_30px_60px_-20px_hsl(25_25%_18%/0.45)] object-cover"
+      />
+    </motion.div>
+  );
+};
+
+const PhotoCollageReveal = () => {
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end end"],
+  });
+
+  return (
+    <section ref={ref} className="relative w-full bg-cream" style={{ height: "260vh" }}>
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <div className="relative w-full h-full">
+          {COLLAGE_PHOTOS.map((p, i) => (
+            <CollagePhotoItem key={i} photo={p} progress={scrollYProgress} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+
 const Invitation = () => (
   <section className="py-32 md:py-44 px-6 text-center bg-cream">
     <Reveal>
