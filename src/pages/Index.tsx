@@ -13,12 +13,7 @@ import PhotoLightbox from "@/components/PhotoLightbox";
 
 import crest from "@/assets/wedding-crest.png";
 import heroImg from "@/assets/couple-hero.jpg";
-import p1 from "@/assets/collage-1.jpg";
-import p2 from "@/assets/collage-2.jpg";
-import p3 from "@/assets/collage-3.jpg";
-import p4 from "@/assets/collage-4.jpg";
 import p5 from "@/assets/collage-5.jpg";
-import p6 from "@/assets/collage-6.jpg";
 
 const WEDDING_DATE = new Date("2026-09-26T15:00:00");
 
@@ -99,112 +94,6 @@ const Invitation = () => (
       </p>
     </Reveal>
   </section>
-);
-
-/* ---------------- Love story ---------------- */
-const stages = [
-  {
-    title: "stage 1: where it began",
-    text: "we met as kids running around the same Texas town — neighbors, classmates, friends long before anything else.",
-    photos: [
-      { src: p1, caption: "the very beginning ❤" },
-      { src: p2, caption: "small town summers" },
-    ],
-  },
-  {
-    title: "stage 2: growing up together",
-    text: "high school formals, summer road trips, late-night drives down the same back roads. somewhere in there it stopped being friendship.",
-    photos: [
-      { src: p3, caption: "the year it all clicked" },
-      { src: p4, caption: "first apartment vibes" },
-    ],
-  },
-  {
-    title: "stage 3: the proposal",
-    text: "a sunset, a ring, a yes that wasn't really a question. and a whole lot of happy tears.",
-    photos: [
-      { src: p5, caption: "she said yes 💍" },
-      { src: p6, caption: "the rest was a blur" },
-    ],
-  },
-];
-
-const LoveStory = ({
-  onPhotoClick,
-}: {
-  onPhotoClick: (src: string, caption: string) => void;
-}) => (
-  <section className="bg-cream pt-24 md:pt-32 pb-32">
-    <div className="max-w-[1400px] mx-auto px-6">
-      <h2 className="font-serif text-[18vw] md:text-[14vw] lg:text-[11vw] leading-[0.95] text-sepia lowercase mb-20 md:mb-32">
-        our love story
-      </h2>
-
-      <div className="space-y-32 md:space-y-48">
-        {stages.map((stage, i) => (
-          <LoveStoryStage
-            key={i}
-            index={i}
-            stage={stage}
-            onPhotoClick={onPhotoClick}
-          />
-        ))}
-      </div>
-    </div>
-  </section>
-);
-
-const LoveStoryStage = ({
-  index,
-  stage,
-  onPhotoClick,
-}: {
-  index: number;
-  stage: (typeof stages)[number];
-  onPhotoClick: (src: string, caption: string) => void;
-}) => (
-  <div className="grid grid-cols-1 md:grid-cols-[1fr_1.2fr] gap-12 md:gap-20 items-start">
-    {/* Sticky text on the left */}
-    <div className="md:sticky md:top-32 self-start text-center md:text-right">
-      <p className="font-serif text-xl md:text-2xl text-sepia mb-4 lowercase">
-        <span className="italic">stage {index + 1}:</span>{" "}
-        {stage.title.replace(/^stage \d+: /, "")}
-      </p>
-      <p className="text-sepia/75 leading-relaxed text-base md:text-lg max-w-sm md:ml-auto">
-        {stage.text}
-      </p>
-    </div>
-
-    {/* Overlapping photo cards on the right */}
-    <div className="space-y-10 md:space-y-16">
-      {stage.photos.map((photo, j) => (
-        <motion.div
-          key={j}
-          initial={{ opacity: 0, y: 80 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-120px" }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className={j % 2 === 1 ? "md:ml-12" : ""}
-        >
-          <button
-            onClick={() => onPhotoClick(photo.src, photo.caption)}
-            className="group block w-full text-left cursor-zoom-in"
-          >
-            <div className="overflow-hidden rounded-[6px] shadow-[0_20px_50px_-20px_hsl(25_25%_18%/0.35)]">
-              <img
-                src={photo.src}
-                alt={photo.caption}
-                className="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            </div>
-            <p className="mt-4 text-sepia/80 text-sm md:text-base lowercase">
-              {photo.caption}
-            </p>
-          </button>
-        </motion.div>
-      ))}
-    </div>
-  </div>
 );
 
 /* ---------------- Countdown ---------------- */
@@ -376,7 +265,7 @@ const Index = () => {
       <main className="bg-background overflow-x-hidden">
         <Hero />
         <Invitation />
-        <LoveStory onPhotoClick={(src, caption) => setLightbox({ src, caption })} />
+        
         <Venue />
         <FAQ />
         <Closing />
