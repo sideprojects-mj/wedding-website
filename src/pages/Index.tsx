@@ -12,7 +12,12 @@ import SmoothScroll from "@/components/SmoothScroll";
 
 import crest from "@/assets/wedding-crest.png";
 import heroImg from "@/assets/couple-hero.jpg";
+import p1 from "@/assets/collage-1.jpg";
+import p2 from "@/assets/collage-2.jpg";
+import p3 from "@/assets/collage-3.jpg";
+import p4 from "@/assets/collage-4.jpg";
 import p5 from "@/assets/collage-5.jpg";
+import p6 from "@/assets/collage-6.jpg";
 
 const WEDDING_DATE = new Date("2026-09-26T15:00:00");
 
