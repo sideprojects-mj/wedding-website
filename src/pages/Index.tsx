@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronDown, MapPin } from "lucide-react";
 import {
@@ -236,11 +236,6 @@ const Footer = () => (
 
 /* ---------------- Page ---------------- */
 const Index = () => {
-  const [lightbox, setLightbox] = useState<{ src: string | null; caption: string }>({
-    src: null,
-    caption: "",
-  });
-
   useEffect(() => {
     document.title = "Mark & Grace · September 26, 2026";
   }, []);
@@ -257,11 +252,6 @@ const Index = () => {
         <Closing />
         <Footer />
       </main>
-      <PhotoLightbox
-        src={lightbox.src}
-        caption={lightbox.caption}
-        onClose={() => setLightbox({ src: null, caption: "" })}
-      />
     </SmoothScroll>
   );
 };
