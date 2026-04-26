@@ -305,51 +305,23 @@ const FAQ = () => (
  * cream margins. The card scales/zooms slightly as the user scrolls past;
  * the quote crossfades in at the apex.
  */
-const Closing = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  // Card "breathes" — zooms in slightly at the apex
-  const cardScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.92, 1, 0.92]);
-  const cardOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const quoteOpacity = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [0, 1, 0]);
-  const quoteY = useTransform(scrollYProgress, [0.3, 0.5, 0.7], [40, 0, -40]);
-  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
-
-  return (
-    <section ref={ref} className="relative h-[200vh] bg-cream">
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-cream">
-        <motion.div
-          style={{ scale: cardScale, opacity: cardOpacity }}
-          className="absolute inset-0 px-[5vw] py-[4vh]"
-        >
-          <div className="relative w-full h-full overflow-hidden rounded-[20px] bg-sepia">
-            <motion.img
-              style={{ y: imgY }}
-              src={heroImg}
-              alt="Mark and Grace"
-              className="w-full h-[120%] object-cover grayscale"
-            />
-            <div className="absolute inset-0 bg-sepia/35" />
-
-            <motion.div
-              style={{ opacity: quoteOpacity, y: quoteY }}
-              className="absolute inset-0 flex items-center justify-center px-6 text-center"
-            >
-              <p className="font-serif italic text-3xl md:text-6xl lg:text-7xl text-cream leading-tight max-w-4xl">
-                you're my <span className="text-gold">favorite</span> person <br />
-                to do anything with <br />
-                for the rest of my life.
-              </p>
-            </motion.div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
+const Closing = () => (
+  <section className="relative h-screen w-full overflow-hidden bg-cream">
+    <img
+      src={heroImg}
+      alt="Mark and Grace"
+      className="absolute inset-0 w-full h-full object-cover grayscale"
+    />
+    <div className="absolute inset-0 bg-sepia/45" />
+    <Reveal className="absolute inset-0 flex items-center justify-center px-6 text-center">
+      <p className="font-serif italic text-3xl md:text-6xl lg:text-7xl text-cream leading-tight max-w-4xl">
+        you're my <span className="text-gold">favorite</span> person <br />
+        to do anything with <br />
+        for the rest of my life.
+      </p>
+    </Reveal>
+  </section>
+);
 
 /* ---------------- Footer ---------------- */
 const Footer = () => (
