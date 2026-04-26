@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useEffect } from "react";
+import { motion } from "framer-motion";
 import { ChevronDown, MapPin } from "lucide-react";
 import {
   Accordion,
@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/accordion";
 import MinimalNav from "@/components/MinimalNav";
 import SmoothScroll from "@/components/SmoothScroll";
-import PhotoLightbox from "@/components/PhotoLightbox";
 
 import crest from "@/assets/wedding-crest.png";
 import heroImg from "@/assets/couple-hero.jpg";
@@ -38,9 +37,7 @@ const Reveal = ({
   </motion.div>
 );
 
-/* ---------------- Hero ----------------
- * Full-bleed hero photo with crest + names overlay. No frame, no polaroid.
- */
+/* ---------------- Hero ---------------- */
 const Hero = () => (
   <section id="top" className="relative h-screen w-full overflow-hidden bg-sepia">
     <img
@@ -49,17 +46,6 @@ const Hero = () => (
       className="absolute inset-0 w-full h-full object-cover"
     />
     <div className="absolute inset-0 bg-sepia/20" />
-
-    <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
-      <motion.img
-        src={crest}
-        alt="Mark & Grace crest"
-        initial={{ opacity: 0, scale: 0.92 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.6, ease: "easeOut" }}
-        className="w-40 md:w-56 lg:w-72 drop-shadow-[0_8px_30px_hsl(25_25%_18%/0.3)]"
-      />
-    </div>
 
     <div className="absolute bottom-[8vh] left-0 right-0 px-6 text-center">
       <motion.h1
