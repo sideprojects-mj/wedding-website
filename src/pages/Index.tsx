@@ -265,7 +265,7 @@ const Index = () => {
       <main className="bg-background overflow-x-hidden">
         <Hero />
         <Invitation />
-        <LoveStory onPhotoClick={(src, caption) => setLightbox({ src, caption })} />
+        
         <Venue />
         <FAQ />
         <Closing />
