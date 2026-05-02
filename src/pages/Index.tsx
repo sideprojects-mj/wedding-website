@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { ChevronDown, MapPin } from "lucide-react";
 import {
   Accordion,
@@ -43,162 +43,185 @@ const Reveal = ({
 );
 
 /* ---------------- Hero ---------------- */
+type HeroCollagePhoto = {
+  src: string;
+  alt: string;
+  left: string;
+  top: string;
+  width: string;
+  height: string;
+  from: "left" | "right";
+  start: number;
+  end: number;
+};
+
+const HERO_COLLAGE_PHOTOS: HeroCollagePhoto[] = [
+  {
+    src: p1,
+    alt: "Mark and Grace together",
+    left: "5vw",
+    top: "12vh",
+    width: "24vw",
+    height: "32vh",
+    from: "left",
+    start: 0,
+    end: 0.58,
+  },
+  {
+    src: p2,
+    alt: "Coastal sunset",
+    left: "9vw",
+    top: "50vh",
+    width: "22vw",
+    height: "22vh",
+    from: "left",
+    start: 0,
+    end: 0.72,
+  },
+  {
+    src: p4,
+    alt: "Travel memory",
+    left: "71vw",
+    top: "30vh",
+    width: "22vw",
+    height: "23vh",
+    from: "right",
+    start: 0,
+    end: 0.64,
+  },
+  {
+    src: p6,
+    alt: "Cliffside view",
+    left: "68vw",
+    top: "58vh",
+    width: "25vw",
+    height: "32vh",
+    from: "right",
+    start: 0,
+    end: 0.86,
+  },
+];
+
+const HeroCollagePhotoItem = ({
+  photo,
+  progress,
+}: {
+  photo: HeroCollagePhoto;
+  progress: ReturnType<typeof useScroll>["scrollYProgress"];
+}) => {
+  const fromX = photo.from === "left" ? -36 : 36;
+  const x = useTransform(progress, [photo.start, photo.end], [fromX, 0], {
+    clamp: true,
+  });
+  const y = useTransform(progress, [photo.start, photo.end], [18, 0], {
+    clamp: true,
+  });
+  return (
+    <motion.figure
+      style={{
+        left: photo.left,
+        top: photo.top,
+        width: photo.width,
+        height: photo.height,
+        x: useTransform(x, (value) => `${value}vw`),
+        y,
+      }}
+      className="absolute z-40 overflow-hidden rounded-[22px] bg-cream shadow-[0_30px_70px_-30px_hsl(25_25%_18%/0.45)] will-change-transform md:rounded-[28px]"
+    >
+      <img src={photo.src} alt={photo.alt} className="h-full w-full object-cover" />
+    </motion.figure>
+  );
+};
+
 const Hero = () => {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start start", "end start"],
+    offset: ["start start", "end end"],
   });
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.82]);
-  const borderRadius = useTransform(scrollYProgress, [0, 0.4], ["0px", "28px"]);
-  const titleOpacity = useTransform(scrollYProgress, [0, 0.35], [1, 0]);
-  const titleY = useTransform(scrollYProgress, [0, 0.5], [0, -40]);
+  const easedProgress = useSpring(scrollYProgress, {
+    stiffness: 34,
+    damping: 18,
+    mass: 1.15,
+    restDelta: 0.0005,
+  });
+  const heroWidth = useTransform(easedProgress, [0, 0.7], ["100vw", "42vw"]);
+  const heroHeight = "100vh";
+  const borderRadius = useTransform(easedProgress, [0, 0.58], ["0px", "36px"]);
+  const backdropOpacity = useTransform(easedProgress, [0.05, 0.58], [0, 1]);
+  const heroShadow = useTransform(
+    easedProgress,
+    [0, 0.7],
+    [
+      "0 0 0 0 hsl(25 25% 18% / 0)",
+      "0 34px 80px -34px hsl(25 25% 18% / 0.45)",
+    ]
+  );
+  const titleOpacity = useTransform(easedProgress, [0, 0.4], [1, 0]);
+  const titleY = useTransform(easedProgress, [0, 0.7], [0, -36]);
+  const promptOpacity = useTransform(easedProgress, [0, 0.36], [1, 0]);
 
   return (
     <section
       id="top"
       ref={ref}
       className="relative w-full bg-cream"
-      style={{ height: "180vh" }}
+      style={{ height: "200vh" }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden">
+        <motion.div style={{ opacity: backdropOpacity }} className="absolute inset-0 bg-cream" />
+
+        <div className="absolute inset-0 z-10 flex items-start justify-center">
+          <motion.div
+            style={{
+              width: heroWidth,
+              height: heroHeight,
+              borderRadius,
+              boxShadow: heroShadow,
+            }}
+            className="relative overflow-hidden bg-sepia origin-center will-change-transform"
+          >
+            <img
+              src={p3}
+              alt="Mark and Grace by the water"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-sepia/20" />
+          </motion.div>
+        </div>
+
+        <div className="pointer-events-none absolute inset-0 z-40">
+          {HERO_COLLAGE_PHOTOS.map((photo) => (
+            <HeroCollagePhotoItem key={photo.src} photo={photo} progress={easedProgress} />
+          ))}
+        </div>
+
         <motion.div
-          style={{ scale, borderRadius }}
-          className="absolute inset-0 overflow-hidden bg-sepia origin-center will-change-transform"
+          style={{ opacity: titleOpacity, y: titleY }}
+          className="absolute bottom-[12vh] left-0 right-0 z-30 px-6 text-center"
         >
-          <img
-            src={heroImg}
-            alt="Mark and Grace"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-sepia/20" />
-
-          <motion.div
-            style={{ opacity: titleOpacity, y: titleY }}
-            className="absolute bottom-[8vh] left-0 right-0 px-6 text-center"
+          <motion.h1
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.4, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="font-display text-[14vw] md:text-[12vw] lg:text-[10vw] leading-[0.9] text-cream lowercase tracking-[-0.02em]"
+            style={{ textShadow: "0 4px 30px hsl(25 25% 18% / 0.5)" }}
           >
-            <motion.h1
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.4, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display text-[14vw] md:text-[12vw] lg:text-[10vw] leading-[0.9] text-cream lowercase tracking-[-0.02em]"
-              style={{ textShadow: "0 4px 30px hsl(25 25% 18% / 0.5)" }}
-            >
-              mark <span className="italic font-serif">&amp;</span> grace
-            </motion.h1>
-          </motion.div>
+            mark <span className="italic font-serif">&amp;</span> grace
+          </motion.h1>
+        </motion.div>
 
-          <motion.div
-            style={{ opacity: titleOpacity }}
-            className="absolute bottom-6 right-8 flex items-center gap-2 text-cream/85"
-          >
-            <ChevronDown className="w-4 h-4 animate-bounce" />
-            <span className="text-[10px] uppercase tracking-eyebrow">Scroll to explore</span>
-          </motion.div>
+        <motion.div
+          style={{ opacity: promptOpacity }}
+          className="absolute bottom-6 right-8 z-30 flex items-center gap-2 text-cream/85"
+        >
+          <ChevronDown className="w-4 h-4 animate-bounce" />
+          <span className="text-[10px] uppercase tracking-eyebrow">Scroll to explore</span>
         </motion.div>
       </div>
     </section>
   );
 };
-
-/* ---------------- Photo Collage Reveal ---------------- */
-type CollagePhoto = {
-  src: string;
-  /** final position as % of stage */
-  left: string;
-  top: string;
-  width: string;
-  rotate: number;
-  /** which side it flies in from */
-  from: "left" | "right" | "top" | "bottom";
-  /** when it animates in (0-1 of section progress) */
-  start: number;
-  end: number;
-  z: number;
-};
-
-const COLLAGE_PHOTOS: CollagePhoto[] = [
-  // top-left selfie
-  { src: p1, left: "4%",  top: "8%",  width: "26%", rotate: -2, from: "left",  start: 0.00, end: 0.35, z: 3 },
-  // bottom-left landscape (sunset cliffs)
-  { src: p2, left: "10%", top: "52%", width: "22%", rotate: 1.5, from: "left",  start: 0.10, end: 0.45, z: 2 },
-  // center hero (proposal)
-  { src: p3, left: "33%", top: "14%", width: "36%", rotate: 0,  from: "bottom", start: 0.20, end: 0.60, z: 5 },
-  // right upper (feet on rocks)
-  { src: p4, left: "70%", top: "28%", width: "24%", rotate: -1.5, from: "right", start: 0.35, end: 0.70, z: 3 },
-  // right lower (cliff lake)
-  { src: p6, left: "72%", top: "60%", width: "26%", rotate: 2,  from: "right", start: 0.50, end: 0.85, z: 4 },
-];
-
-const CollagePhotoItem = ({
-  photo,
-  progress,
-}: {
-  photo: CollagePhoto;
-  progress: ReturnType<typeof useScroll>["scrollYProgress"];
-}) => {
-  const offscreen = 140; // vw/vh percent
-  const fromX =
-    photo.from === "left" ? -offscreen : photo.from === "right" ? offscreen : 0;
-  const fromY =
-    photo.from === "top" ? -offscreen : photo.from === "bottom" ? offscreen : 0;
-
-  const x = useTransform(progress, [photo.start, photo.end], [fromX, 0], {
-    clamp: true,
-  });
-  const y = useTransform(progress, [photo.start, photo.end], [fromY, 0], {
-    clamp: true,
-  });
-  const opacity = useTransform(
-    progress,
-    [photo.start, photo.start + 0.05, photo.end],
-    [0, 1, 1],
-    { clamp: true }
-  );
-
-  return (
-    <motion.div
-      style={{
-        left: photo.left,
-        top: photo.top,
-        width: photo.width,
-        rotate: photo.rotate,
-        zIndex: photo.z,
-        x: useTransform(x, (v) => `${v}vw`),
-        y: useTransform(y, (v) => `${v}vh`),
-        opacity,
-      }}
-      className="absolute will-change-transform"
-    >
-      <img
-        src={photo.src}
-        alt=""
-        className="w-full h-auto rounded-[14px] shadow-[0_30px_60px_-20px_hsl(25_25%_18%/0.45)] object-cover"
-      />
-    </motion.div>
-  );
-};
-
-const PhotoCollageReveal = () => {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
-
-  return (
-    <section ref={ref} className="relative w-full bg-cream" style={{ height: "260vh" }}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <div className="relative w-full h-full">
-          {COLLAGE_PHOTOS.map((p, i) => (
-            <CollagePhotoItem key={i} photo={p} progress={scrollYProgress} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
 
 const Invitation = () => (
   <section className="py-32 md:py-44 px-6 text-center bg-cream">
@@ -376,9 +399,8 @@ const Index = () => {
   return (
     <SmoothScroll>
       <MinimalNav />
-      <main className="bg-background overflow-x-hidden">
+      <main className="bg-background overflow-x-clip">
         <Hero />
-        <PhotoCollageReveal />
         <Invitation />
         
         <Venue />
