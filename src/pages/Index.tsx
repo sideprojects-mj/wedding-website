@@ -207,7 +207,7 @@ const Hero = () => {
             className="font-display text-[14vw] md:text-[12vw] lg:text-[10vw] leading-[0.9] text-cream lowercase tracking-[-0.02em]"
             style={{ textShadow: "0 4px 30px hsl(25 25% 18% / 0.5)" }}
           >
-            mark <span className="italic font-serif">&amp;</span> grace
+            grace <span className="italic font-serif">&amp;</span> mark
           </motion.h1>
         </motion.div>
 
