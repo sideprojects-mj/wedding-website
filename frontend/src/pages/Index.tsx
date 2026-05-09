@@ -23,7 +23,7 @@ const CHURCH_IMAGE_URL =
   "https://images.unsplash.com/photo-1704281657570-350a6ef6a0c1?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&w=1400";
 const VENUE_IMAGE_URL =
   "https://images.unsplash.com/photo-1670529776180-60e4132ab90c?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&w=1400";
-const REGISTRY_URL = "https://www.crateandbarrel.com/gift-registry/olivia-flores-and-john-mihaliak/r7334396";
+const REGISTRY_URL = "https://www.crateandbarrel.com/gift-registry/";
 
 /* ---------------- Reveal helper ---------------- */
 const Reveal = ({
