@@ -223,20 +223,293 @@ const Hero = () => {
   );
 };
 
-const Invitation = () => (
-  <section className="py-32 md:py-44 px-6 text-center bg-cream">
-    <Reveal>
-      <p className="font-serif italic text-4xl md:text-6xl lg:text-7xl text-sepia leading-tight">
-        you're <span className="text-gold">cordially</span> invited
-      </p>
-    </Reveal>
-    <Reveal delay={0.2}>
-      <p className="mt-8 text-xs md:text-sm uppercase tracking-[0.5em] text-sepia/60">
-        to the adventure that is...
-      </p>
-    </Reveal>
-  </section>
-);
+const scheduleItems = [
+  {
+    time: "3:30 PM-4:30 PM",
+    title: "Nuptual Mass",
+    venue: "Sts. Peter & Paul Catholic Church",
+    address: "1746 Herbelin Road, New Braunfels, TX 78132",
+    note: "Please arrive 15 minutes before Mass begins"
+  },
+  {
+    time: "5:00 PM-6:00 PM",
+    title: "Cocktail Hour",
+    venue: "The Gardens of Cranesbury View",
+    address: "1746 Herbelin Road, New Braunfels, TX 78132",
+    note: "Attire: Black Tie",
+  },
+  {
+    time: "6:00 PM-12:00 AM",
+    title: "Reception",
+    venue: "The Gardens of Cranesbury View",
+    address: "1746 Herbelin Road, New Braunfels, TX 78132",
+    note: "Dinner, drinks, and dancing",
+  },
+];
+
+type ConfettiParticle = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  length: number;
+  rotation: number;
+  spin: number;
+  color: string;
+  shape: "rect" | "circle" | "heart";
+  tick: number;
+  ttl: number;
+};
+
+const ScheduleConfetti = ({ triggerRef }: { triggerRef: React.RefObject<HTMLElement> }) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const hasBurstRef = useRef(false);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const trigger = triggerRef.current;
+    if (!canvas || !trigger) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let animationFrame = 0;
+    let particles: ConfettiParticle[] = [];
+    const colors = ["#8c5f59", "#9b6a5f", "#a98f63", "#b8a779", "#79645a"];
+
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+
+    const holdScroll = () => {
+      const lockedY = window.scrollY;
+      const stop = (event: Event) => event.preventDefault();
+      const stopKeys = (event: KeyboardEvent) => {
+        if (["ArrowDown", "ArrowUp", "PageDown", "PageUp", "Home", "End", " "].includes(event.key)) {
+          event.preventDefault();
+        }
+      };
+      let releaseFrame = 0;
+      const keepStill = () => {
+        window.scrollTo(0, lockedY);
+        releaseFrame = requestAnimationFrame(keepStill);
+      };
+
+      window.addEventListener("wheel", stop, { passive: false });
+      window.addEventListener("touchmove", stop, { passive: false });
+      window.addEventListener("keydown", stopKeys);
+      keepStill();
+
+      window.setTimeout(() => {
+        window.removeEventListener("wheel", stop);
+        window.removeEventListener("touchmove", stop);
+        window.removeEventListener("keydown", stopKeys);
+        if (releaseFrame) cancelAnimationFrame(releaseFrame);
+      }, 1900);
+    };
+
+    const getBurstY = () => {
+      const rect = trigger.getBoundingClientRect();
+      return Math.min(height * 0.48, Math.max(height * 0.16, rect.top + rect.height * 0.16));
+    };
+
+    const addBurst = (originX: number, originY: number, angle: number) => {
+      const spread = 58;
+
+      for (let index = 0; index < 54; index += 1) {
+        const theta = ((angle + (Math.random() - 0.5) * spread) * Math.PI) / 180;
+        const velocity = 16 + Math.random() * 12;
+
+        particles.push({
+          x: originX,
+          y: originY,
+          vx: Math.cos(theta) * velocity,
+          vy: -Math.sin(theta) * velocity,
+          size: 2 + Math.random() * 3.5,
+          length: 5 + Math.random() * 7,
+          rotation: Math.random() * Math.PI,
+          spin: (Math.random() - 0.5) * 0.28,
+          color: colors[index % colors.length],
+          shape: index % 9 === 0 ? "heart" : index % 5 === 0 ? "circle" : "rect",
+          tick: 0,
+          ttl: 225 + Math.random() * 55,
+        });
+      }
+    };
+
+    const drawHeart = (particle: ConfettiParticle) => {
+      ctx.font = `${particle.size * 2.2}px serif`;
+      ctx.fillText("♥", -particle.size, particle.size);
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      particles = particles.filter((particle) => {
+        particle.tick += 1;
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        particle.vx *= 0.988;
+        particle.vy = particle.vy * 0.988 + 0.18;
+        particle.rotation += particle.spin;
+
+        const progress = particle.tick / particle.ttl;
+        const opacity = progress < 0.72 ? 0.72 : Math.max(0, 0.72 * (1 - (progress - 0.72) / 0.28));
+        if (opacity <= 0 || particle.y > height + 80) return false;
+
+        ctx.save();
+        ctx.globalAlpha = opacity;
+        ctx.translate(particle.x, particle.y);
+        ctx.rotate(particle.rotation);
+        ctx.fillStyle = particle.color;
+        ctx.shadowColor = particle.color;
+        ctx.shadowBlur = 0;
+
+        if (particle.shape === "circle") {
+          ctx.beginPath();
+          ctx.arc(0, 0, particle.size * 0.7, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (particle.shape === "heart") {
+          drawHeart(particle);
+        } else {
+          ctx.fillRect(-particle.length / 2, -particle.size / 2, particle.length, particle.size);
+        }
+
+        ctx.restore();
+        return true;
+      });
+
+      if (particles.length > 0) {
+        animationFrame = requestAnimationFrame(draw);
+      } else {
+        animationFrame = 0;
+      }
+    };
+
+    const pop = () => {
+      holdScroll();
+      const originY = getBurstY();
+      addBurst(0, originY, 24);
+      addBurst(width, originY, 156);
+      window.setTimeout(() => {
+        const followUpY = getBurstY();
+        addBurst(0, followUpY, 20);
+        addBurst(width, followUpY, 160);
+        if (!animationFrame) animationFrame = requestAnimationFrame(draw);
+      }, 220);
+
+      if (!animationFrame) animationFrame = requestAnimationFrame(draw);
+    };
+
+    resize();
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasBurstRef.current) {
+          hasBurstRef.current = true;
+          pop();
+          observer.unobserve(trigger);
+        }
+      },
+      { threshold: 0.55 },
+    );
+
+    observer.observe(trigger);
+    window.addEventListener("resize", resize, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", resize);
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+    };
+  }, [triggerRef]);
+
+  return (
+    <div className="pointer-events-none absolute inset-0 z-10">
+      <canvas
+        ref={canvasRef}
+        className="fixed left-0 top-0 h-dvh w-full pointer-events-none"
+      />
+    </div>
+  );
+};
+
+const Schedule = () => {
+  return (
+    <section className="relative overflow-hidden bg-cream px-6 pb-12 pt-32 md:pb-16 md:pt-48">
+      <div className="relative z-30 mx-auto max-w-5xl">
+        <Reveal className="text-center">
+          <p className="font-serif text-3xl uppercase tracking-[0.28em] text-sepia md:text-4xl">
+            Schedule
+          </p>
+          <p className="mt-4 font-serif text-lg uppercase tracking-[0.32em] text-sepia/85 md:text-2xl">
+            September 26, 2026
+          </p>
+        </Reveal>
+
+        <div className="relative mx-auto mt-16 w-fit max-w-full pl-10 pr-4 md:mt-20 md:pl-14 md:pr-10">
+          <motion.div
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
+            viewport={{ once: true, margin: "-120px" }}
+            transition={{ duration: 1.35, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute bottom-8 left-4 top-8 w-px origin-top bg-sepia/35 md:left-6"
+          />
+          {scheduleItems.map((item, index) => (
+            <div
+              key={item.title}
+              className="relative"
+            >
+              <Reveal delay={0.12 * index}>
+                <div className="relative py-10 md:py-12">
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.4 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.65, delay: 0.14 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute left-[-30px] top-[3.15rem] z-10 h-3 w-3 rounded-full bg-sepia shadow-[0_0_0_7px_hsl(var(--cream))] md:left-[-38px] md:top-[3.65rem]"
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, x: 24 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.9, delay: 0.26 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    className="text-left"
+                  >
+                    <div className="flex flex-col gap-3 md:flex-row md:items-baseline md:gap-8">
+                      <h2 className="font-serif text-2xl uppercase tracking-[0.24em] text-sepia md:text-3xl">
+                        {item.title}
+                      </h2>
+                      <p className="font-serif text-base uppercase tracking-[0.22em] text-sepia/65 md:text-lg">
+                        {item.time}
+                      </p>
+                    </div>
+                    <div className="mt-5 space-y-2 font-serif text-lg leading-relaxed tracking-[0.04em] text-sepia/80 md:text-xl">
+                      <p>{item.venue}</p>
+                      <p>{item.address}</p>
+                    </div>
+                    <p className="mt-5 font-serif text-lg italic tracking-[0.04em] text-sepia/70 md:text-xl">
+                      {item.note}
+                    </p>
+                  </motion.div>
+                </div>
+              </Reveal>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 /* ---------------- Countdown ---------------- */
 const useCountdown = (target: Date) => {
@@ -256,6 +529,7 @@ const useCountdown = (target: Date) => {
 
 /* ---------------- Venue ---------------- */
 const Venue = () => {
+  const countdownRef = useRef<HTMLDivElement | null>(null);
   const c = useCountdown(WEDDING_DATE);
   const blocks = [
     { val: c.days, label: "Days" },
@@ -264,31 +538,38 @@ const Venue = () => {
     { val: c.seconds, label: "Seconds" },
   ];
   return (
-    <section id="rsvp" className="py-32 px-6 bg-cream text-center">
-      <Reveal>
-        <p className="font-serif italic text-4xl md:text-6xl text-sepia">so please join us...</p>
-        <h3 className="mt-8 font-display text-4xl md:text-7xl text-sepia tracking-display lowercase">
-          september 26, 2026
-        </h3>
-      </Reveal>
+    <section
+      id="rsvp"
+      className="relative overflow-hidden bg-cream px-6 pb-32 pt-12 text-center md:pt-16"
+    >
+      <ScheduleConfetti triggerRef={countdownRef} />
 
-      <Reveal delay={0.1} className="mt-14 flex justify-center items-center gap-3 md:gap-8">
-        {blocks.map((b, i) => (
-          <div key={b.label} className="flex items-center gap-3 md:gap-8">
-            <div className="text-center min-w-[60px] md:min-w-[90px]">
-              <div className="font-serif text-4xl md:text-7xl text-sepia tabular-nums">{b.val}</div>
-              <div className="text-[10px] uppercase tracking-eyebrow text-sepia/60 mt-2">
-                {b.label}
+      <div ref={countdownRef} className="relative z-30">
+        <Reveal className="relative z-30">
+          <p className="font-serif italic text-4xl md:text-6xl text-sepia">counting down...</p>
+          <h3 className="mt-8 font-display text-4xl md:text-7xl text-sepia tracking-display lowercase">
+            september 26, 2026
+          </h3>
+        </Reveal>
+
+        <Reveal delay={0.1} className="relative z-30 mt-14 flex justify-center items-center gap-3 md:gap-8">
+          {blocks.map((b, i) => (
+            <div key={b.label} className="flex items-center gap-3 md:gap-8">
+              <div className="text-center min-w-[60px] md:min-w-[90px]">
+                <div className="font-serif text-4xl md:text-7xl text-sepia tabular-nums">{b.val}</div>
+                <div className="text-[10px] uppercase tracking-eyebrow text-sepia/60 mt-2">
+                  {b.label}
+                </div>
               </div>
+              {i < blocks.length - 1 && (
+                <span className="font-serif text-3xl md:text-5xl text-gold">:</span>
+              )}
             </div>
-            {i < blocks.length - 1 && (
-              <span className="font-serif text-3xl md:text-5xl text-gold">:</span>
-            )}
-          </div>
-        ))}
-      </Reveal>
+          ))}
+        </Reveal>
+      </div>
 
-      <Reveal delay={0.2} className="mt-24 max-w-3xl mx-auto">
+      <Reveal delay={0.2} className="relative z-30 mt-24 max-w-3xl mx-auto">
         <div className="aspect-[16/10] overflow-hidden rounded-[20px] shadow-[var(--shadow-soft)]">
           <img src={p5} alt="The Veranda" className="w-full h-full object-cover" />
         </div>
@@ -401,7 +682,7 @@ const Index = () => {
       <MinimalNav />
       <main className="bg-background overflow-x-clip">
         <Hero />
-        <Invitation />
+        <Schedule />
         
         <Venue />
         <FAQ />
