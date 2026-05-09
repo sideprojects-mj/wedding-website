@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
-import { ChevronDown, MapPin } from "lucide-react";
+import { ChevronDown, ExternalLink, MapPin } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -16,10 +16,14 @@ import p1 from "@/assets/collage-1.jpg";
 import p2 from "@/assets/collage-2.jpg";
 import p3 from "@/assets/collage-3.jpg";
 import p4 from "@/assets/collage-4.jpg";
-import p5 from "@/assets/collage-5.jpg";
 import p6 from "@/assets/collage-6.jpg";
 
 const WEDDING_DATE = new Date("2026-09-26T15:00:00");
+const CHURCH_IMAGE_URL =
+  "https://images.unsplash.com/photo-1704281657570-350a6ef6a0c1?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&w=1400";
+const VENUE_IMAGE_URL =
+  "https://images.unsplash.com/photo-1670529776180-60e4132ab90c?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&w=1400";
+const REGISTRY_URL = "https://www.crateandbarrel.com/gift-registry/olivia-flores-and-john-mihaliak/r7334396";
 
 /* ---------------- Reveal helper ---------------- */
 const Reveal = ({
@@ -569,30 +573,164 @@ const Venue = () => {
         </Reveal>
       </div>
 
-      <Reveal delay={0.2} className="relative z-30 mt-24 max-w-3xl mx-auto">
-        <div className="aspect-[16/10] overflow-hidden rounded-[20px] shadow-[var(--shadow-soft)]">
-          <img src={p5} alt="The Veranda" className="w-full h-full object-cover" />
+      <Reveal delay={0.2} className="relative z-30 mt-24 mx-auto max-w-6xl">
+        <p className="font-serif text-3xl text-sepia md:text-5xl">the places</p>
+        <div className="mt-12 grid gap-10 md:grid-cols-2 md:gap-8">
+          {[
+            {
+              title: "Ceremony",
+              label: "The Church",
+              image: CHURCH_IMAGE_URL,
+              alt: "Church ceremony interior",
+              from: -96,
+            },
+            {
+              title: "Reception",
+              label: "The Veranda",
+              image: VENUE_IMAGE_URL,
+              alt: "Outdoor wedding venue courtyard",
+              from: 96,
+            },
+          ].map((place, index) => (
+            <motion.figure
+              key={place.title}
+              initial={{ opacity: 0, x: place.from }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: 1.05, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+              className="text-left"
+            >
+              <div className="aspect-[4/5] overflow-hidden rounded-[8px] shadow-[var(--shadow-soft)] md:aspect-[5/6]">
+                <img src={place.image} alt={place.alt} className="h-full w-full object-cover" />
+              </div>
+              <figcaption className="mt-6">
+                <p className="text-xs uppercase tracking-eyebrow text-gold">{place.title}</p>
+                <h4 className="mt-2 font-serif text-3xl text-sepia md:text-4xl">{place.label}</h4>
+                <a
+                  href="https://maps.google.com/?q=New+Braunfels+Texas"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-flex items-center gap-2 text-sm uppercase tracking-eyebrow text-sepia/70 transition-colors hover:text-gold"
+                >
+                  <MapPin className="h-4 w-4" />
+                  New Braunfels, Texas
+                </a>
+              </figcaption>
+            </motion.figure>
+          ))}
         </div>
-        <h4 className="mt-8 font-serif text-3xl md:text-5xl text-sepia">The Veranda</h4>
-        <a
-          href="https://maps.google.com/?q=New+Braunfels+Texas"
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-flex items-center gap-2 text-sm text-sepia/70 hover:text-gold transition-colors uppercase tracking-eyebrow"
-        >
-          <MapPin className="w-4 h-4" />
-          New Braunfels, Texas
-        </a>
-        <p className="mt-12 text-xs uppercase tracking-eyebrow text-sepia/60">
-          RSVP coming soon ;)
-        </p>
-        <p className="mt-12 max-w-xl mx-auto text-sepia/75 italic font-serif text-lg md:text-2xl leading-relaxed">
-          The vision for the night is simple: all of our most beloved people in one place that happens to have flowing drinks, good music, and an unforgettable dance floor.
-        </p>
+        {/*<p className="mt-12 text-xs uppercase tracking-eyebrow text-sepia/60">*/}
+        {/*  RSVP coming soon ;)*/}
+        {/*</p>*/}
+        {/*<p className="mt-12 max-w-xl mx-auto text-sepia/75 italic font-serif text-lg md:text-2xl leading-relaxed">*/}
+        {/*  The vision for the night is simple: all of our most beloved people in one place that happens to have flowing drinks, good music, and an unforgettable dance floor.*/}
+        {/*</p>*/}
       </Reveal>
     </section>
   );
 };
+
+/* ---------------- Registry ---------------- */
+const registryItems = [
+  {
+    name: "Roulette 10-oz. Blue Band Mug",
+    detail: "$8.95 · 0 of 4 purchased",
+    image:
+      "https://cb.scene7.com/is/image/Crate/RouletteBlueBndMugSSS21/%24web_gr_list_desktop%24/240201103713/roulette-blue-band-mug.jpg",
+  },
+  {
+    name: "Bodega 17-Oz. Highball Glass",
+    detail: "$4.95 · 0 of 8 purchased",
+    image:
+      "https://cb.scene7.com/is/image/Crate/BodegaGlass17ozSSS22/%24web_gr_list_desktop%24/240201123534/bodega-glass-17-oz.jpg",
+  },
+];
+
+const Registry = () => (
+  <section className="bg-cream px-6 pb-28 pt-12 md:pb-36 md:pt-16">
+    <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-[0.85fr_1.15fr] md:gap-16">
+      <Reveal className="text-left">
+        <p className="text-xs uppercase tracking-eyebrow text-gold">registry</p>
+        <h2 className="mt-5 font-serif text-5xl lowercase leading-none text-sepia md:text-7xl">
+          for our home
+        </h2>
+        {/*<p className="mt-7 max-w-md font-serif text-xl italic leading-relaxed text-sepia/70 md:text-2xl">*/}
+        {/*  Your presence is the gift. For anyone who has asked, we are registered at Crate & Barrel.*/}
+        {/*</p>*/}
+        <a
+          href={REGISTRY_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-9 inline-flex items-center gap-3 rounded-full bg-sepia px-7 py-3 text-xs uppercase tracking-eyebrow text-cream transition-transform duration-300 hover:scale-105"
+        >
+          View registry
+          <ExternalLink className="h-4 w-4" />
+        </a>
+      </Reveal>
+
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        className="overflow-hidden rounded-[8px] border border-sepia/10 bg-background shadow-[var(--shadow-soft)]"
+      >
+        <div className="flex items-center justify-between border-b border-sepia/10 bg-cream/70 px-5 py-4">
+          <div className="flex gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-sepia/25" />
+            <span className="h-2.5 w-2.5 rounded-full bg-sepia/20" />
+            <span className="h-2.5 w-2.5 rounded-full bg-sepia/15" />
+          </div>
+          <p className="text-[10px] uppercase tracking-[0.24em] text-sepia/55">
+            crate &amp; barrel
+          </p>
+        </div>
+
+        <div className="p-5 md:p-7">
+          <div className="flex items-end justify-between gap-6 border-b border-sepia/10 pb-6">
+            <div>
+              <p className="text-[10px] uppercase tracking-eyebrow text-gold">Mark &amp; Grace</p>
+              <h3 className="mt-2 font-serif text-3xl text-sepia md:text-4xl">Wedding Registry</h3>
+            </div>
+            <p className="hidden text-right text-xs uppercase tracking-[0.18em] text-sepia/45 sm:block">
+              09.26.26
+            </p>
+          </div>
+
+          <div className="mt-7 grid grid-cols-2 gap-4">
+            {registryItems.map((item, index) => (
+              <motion.a
+                key={item.name}
+                href={REGISTRY_URL}
+                target="_blank"
+                rel="noreferrer"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.75, delay: 0.12 * index, ease: [0.22, 1, 0.36, 1] }}
+                className="group border border-sepia/10 bg-cream/50 p-3 text-left transition-colors duration-300 hover:border-gold/50"
+              >
+                <div className="aspect-square overflow-hidden bg-background">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                </div>
+                <p className="mt-4 font-serif text-lg text-sepia transition-colors group-hover:text-gold">
+                  {item.name}
+                </p>
+                <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-sepia/45">
+                  {item.detail}
+                </p>
+              </motion.a>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  </section>
+);
 
 /* ---------------- FAQ ---------------- */
 const faqs = [
@@ -685,6 +823,7 @@ const Index = () => {
         <Schedule />
         
         <Venue />
+        <Registry />
         <FAQ />
         <Closing />
         <Footer />
