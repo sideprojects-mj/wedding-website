@@ -11,7 +11,7 @@ import java.util.Optional;
 @RequestMapping("/api/rsvps")
 @CrossOrigin(origins = {
         "http://localhost:8080",
-        "https://frontend-9965441404.us-central1.run.app/",
+        "https://frontend-9965441404.us-central1.run.app",
 })
 public class RsvpController {
 
