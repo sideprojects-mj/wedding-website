@@ -41,7 +41,7 @@ const MinimalNav = () => {
             FAQ
           </a>
           <a
-            href="#rsvp"
+            href="/rsvp"
             className="text-xs md:text-sm uppercase tracking-eyebrow text-sepia bg-cream hover:bg-background transition-colors px-4 py-1.5 rounded-full border border-sepia/15"
           >
             RSVP
