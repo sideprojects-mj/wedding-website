@@ -324,7 +324,7 @@ const ScheduleConfetti = ({ triggerRef }: { triggerRef: React.RefObject<HTMLElem
 
     const getBurstY = () => {
       const rect = trigger.getBoundingClientRect();
-      return Math.min(height * 0.48, Math.max(height * 0.16, rect.top + rect.height * 0.16));
+      return Math.min(height * 0.62, Math.max(height * 0.22, rect.top + rect.height * 0.45));
     };
 
     const addBurst = (originX: number, originY: number, angle: number) => {
@@ -415,23 +415,24 @@ const ScheduleConfetti = ({ triggerRef }: { triggerRef: React.RefObject<HTMLElem
       if (!animationFrame) animationFrame = requestAnimationFrame(draw);
     };
 
-    resize();
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasBurstRef.current) {
-          hasBurstRef.current = true;
-          pop();
-          observer.unobserve(trigger);
-        }
-      },
-      { threshold: 0.55 },
-    );
+    const maybePop = () => {
+      if (hasBurstRef.current) return;
+      const rect = trigger.getBoundingClientRect();
+      const triggerCenter = rect.top + rect.height / 2;
+      if (triggerCenter <= height * 0.52 && triggerCenter >= height * 0.12) {
+        hasBurstRef.current = true;
+        pop();
+        window.removeEventListener("scroll", maybePop);
+      }
+    };
 
-    observer.observe(trigger);
+    resize();
+    maybePop();
+    window.addEventListener("scroll", maybePop, { passive: true });
     window.addEventListener("resize", resize, { passive: true });
 
     return () => {
-      observer.disconnect();
+      window.removeEventListener("scroll", maybePop);
       window.removeEventListener("resize", resize);
       if (animationFrame) cancelAnimationFrame(animationFrame);
     };
@@ -533,7 +534,7 @@ const useCountdown = (target: Date) => {
 
 /* ---------------- Venue ---------------- */
 const Venue = () => {
-  const countdownRef = useRef<HTMLDivElement | null>(null);
+  const countdownNumbersRef = useRef<HTMLDivElement | null>(null);
   const c = useCountdown(WEDDING_DATE);
   const blocks = [
     { val: c.days, label: "Days" },
@@ -546,9 +547,9 @@ const Venue = () => {
       id="rsvp"
       className="relative overflow-hidden bg-cream px-6 pb-32 pt-12 text-center md:pt-16"
     >
-      <ScheduleConfetti triggerRef={countdownRef} />
+      <ScheduleConfetti triggerRef={countdownNumbersRef} />
 
-      <div ref={countdownRef} className="relative z-30">
+      <div className="relative z-30">
         <Reveal className="relative z-30">
           <p className="font-serif italic text-4xl md:text-6xl text-sepia">counting down...</p>
           <h3 className="mt-8 font-display text-4xl md:text-7xl text-sepia tracking-display lowercase">
@@ -556,21 +557,23 @@ const Venue = () => {
           </h3>
         </Reveal>
 
-        <Reveal delay={0.1} className="relative z-30 mt-14 flex justify-center items-center gap-3 md:gap-8">
-          {blocks.map((b, i) => (
-            <div key={b.label} className="flex items-center gap-3 md:gap-8">
-              <div className="text-center min-w-[60px] md:min-w-[90px]">
-                <div className="font-serif text-4xl md:text-7xl text-sepia tabular-nums">{b.val}</div>
-                <div className="text-[10px] uppercase tracking-eyebrow text-sepia/60 mt-2">
-                  {b.label}
+        <div ref={countdownNumbersRef}>
+          <Reveal delay={0.1} className="relative z-30 mt-14 flex justify-center items-center gap-3 md:gap-8">
+            {blocks.map((b, i) => (
+              <div key={b.label} className="flex items-center gap-3 md:gap-8">
+                <div className="text-center min-w-[60px] md:min-w-[90px]">
+                  <div className="font-serif text-4xl md:text-7xl text-sepia tabular-nums">{b.val}</div>
+                  <div className="text-[10px] uppercase tracking-eyebrow text-sepia/60 mt-2">
+                    {b.label}
+                  </div>
                 </div>
+                {i < blocks.length - 1 && (
+                  <span className="font-serif text-3xl md:text-5xl text-gold">:</span>
+                )}
               </div>
-              {i < blocks.length - 1 && (
-                <span className="font-serif text-3xl md:text-5xl text-gold">:</span>
-              )}
-            </div>
-          ))}
-        </Reveal>
+            ))}
+          </Reveal>
+        </div>
       </div>
 
       <Reveal delay={0.2} className="relative z-30 mt-24 mx-auto max-w-6xl">
