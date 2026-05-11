@@ -2,6 +2,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Search, X } from "lucide-react";
+import { API_BASE_URL } from "@/config";
 
 type RsvpRecord = {
   id?: number;
@@ -15,7 +16,6 @@ type RsvpRecord = {
 
 type LookupStatus = "idle" | "loading" | "found" | "missing" | "error" | "submitted";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
 const confettiPieces = Array.from({ length: 90 }, (_, index) => ({
   left: `${(index * 37) % 100}%`,
   delay: (index % 18) * 0.08,

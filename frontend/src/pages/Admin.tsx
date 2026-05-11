@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Lock, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { ADMIN_PASSCODE, API_BASE_URL } from "@/config";
 
 type RsvpRecord = {
   id?: number;
@@ -12,8 +13,6 @@ type RsvpRecord = {
   submittedAt?: string;
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? "";
-const ADMIN_PASSCODE = import.meta.env.VITE_ADMIN_PASSCODE ?? "0926";
 const PASSCODE_STORAGE_KEY = "wedding-admin-unlocked";
 
 const keypad = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "delete"];
