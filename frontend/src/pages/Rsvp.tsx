@@ -4,17 +4,42 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Search, X } from "lucide-react";
 import { API_BASE_URL } from "@/config";
 
+type MealChoice = "BEEF" | "CHICKEN" | "VEGETARIAN";
+
 type RsvpRecord = {
   id?: number;
   guestName: string;
   email?: string | null;
-  attending?: boolean;
-  mealChoice?: string | null;
+  attending?: boolean | null;
+  responded?: boolean | null;
+  invitedToRehearsalDinner?: boolean | null;
+  rehearsalDinnerAttending?: boolean | null;
+  rehearsalDinnerResponded?: boolean | null;
+  mealChoice?: MealChoice | null;
   message?: string | null;
   submittedAt?: string;
+  partyId?: number | null;
+  partyName?: string | null;
+};
+
+type RsvpParty = {
+  id?: number | null;
+  partyName: string;
+  guests: RsvpRecord[];
+};
+
+type RsvpLookupResponse = {
+  foundGuest: RsvpRecord | null;
+  party: RsvpParty | null;
 };
 
 type LookupStatus = "idle" | "loading" | "found" | "missing" | "error" | "submitted";
+
+const mealChoices: { value: MealChoice; label: string }[] = [
+  { value: "BEEF", label: "Beef" },
+  { value: "CHICKEN", label: "Chicken" },
+  { value: "VEGETARIAN", label: "Vegetarian" },
+];
 
 const confettiPieces = Array.from({ length: 90 }, (_, index) => ({
   left: `${(index * 37) % 100}%`,
@@ -65,12 +90,23 @@ const ConfettiRain = () => (
 
 const Rsvp = () => {
   const [name, setName] = useState("");
-  const [record, setRecord] = useState<RsvpRecord | null>(null);
+  const [foundGuest, setFoundGuest] = useState<RsvpRecord | null>(null);
+  const [party, setParty] = useState<RsvpParty | null>(null);
   const [status, setStatus] = useState<LookupStatus>("idle");
   const [error, setError] = useState("");
-  const [attending, setAttending] = useState<boolean | null>(null);
+  const [responses, setResponses] = useState<Record<number, boolean | null>>({});
+  const [selectedMeals, setSelectedMeals] = useState<Record<number, MealChoice | null>>({});
+  const [rehearsalResponses, setRehearsalResponses] = useState<Record<number, boolean | null>>({});
 
-  const displayName = useMemo(() => record?.guestName || name.trim(), [name, record]);
+  const displayName = useMemo(
+    () => party?.partyName || foundGuest?.guestName || name.trim(),
+    [name, foundGuest, party],
+  );
+
+  const hasAccepted = useMemo(
+    () => Object.values(responses).some((answer) => answer === true),
+    [responses],
+  );
 
   const lookupRsvp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -84,8 +120,11 @@ const Rsvp = () => {
 
     setStatus("loading");
     setError("");
-    setRecord(null);
-    setAttending(null);
+    setFoundGuest(null);
+    setParty(null);
+    setResponses({});
+    setSelectedMeals({});
+    setRehearsalResponses({});
 
     try {
       const response = await fetch(
@@ -96,15 +135,43 @@ const Rsvp = () => {
         throw new Error("Lookup failed");
       }
 
-      const data = (await response.json()) as RsvpRecord | null;
+      const data = (await response.json()) as RsvpLookupResponse;
 
-      if (!data || !data.guestName) {
+      if (!data?.foundGuest || !data.party) {
         setStatus("missing");
         return;
       }
 
-      setRecord(data);
-      setAttending(typeof data.attending === "boolean" ? data.attending : null);
+      setFoundGuest(data.foundGuest);
+      setParty(data.party);
+      setResponses(
+        data.party.guests.reduce<Record<number, boolean | null>>((current, guest) => {
+          if (guest.id) {
+            current[guest.id] =
+              guest.responded && typeof guest.attending === "boolean" ? guest.attending : null;
+          }
+          return current;
+        }, {}),
+      );
+      setSelectedMeals(
+        data.party.guests.reduce<Record<number, MealChoice | null>>((current, guest) => {
+          if (guest.id) {
+            current[guest.id] = guest.mealChoice ?? null;
+          }
+          return current;
+        }, {}),
+      );
+      setRehearsalResponses(
+        data.party.guests.reduce<Record<number, boolean | null>>((current, guest) => {
+          if (guest.id && guest.invitedToRehearsalDinner) {
+            current[guest.id] =
+              guest.rehearsalDinnerResponded && typeof guest.rehearsalDinnerAttending === "boolean"
+                ? guest.rehearsalDinnerAttending
+                : null;
+          }
+          return current;
+        }, {}),
+      );
       setStatus("found");
     } catch {
       setStatus("error");
@@ -112,40 +179,105 @@ const Rsvp = () => {
     }
   };
 
-  const submitAnswer = async (answer: boolean) => {
-    if (!displayName) return;
+  const setGuestAnswer = (guestId: number | undefined, answer: boolean) => {
+    if (!guestId) return;
+    setResponses((current) => ({ ...current, [guestId]: answer }));
+    if (!answer) {
+      setSelectedMeals((current) => ({ ...current, [guestId]: null }));
+    }
+  };
+
+  const setGuestMeal = (guestId: number | undefined, mealChoice: MealChoice) => {
+    if (!guestId) return;
+    setSelectedMeals((current) => ({ ...current, [guestId]: mealChoice }));
+  };
+
+  const setRehearsalAnswer = (guestId: number | undefined, answer: boolean) => {
+    if (!guestId) return;
+    setRehearsalResponses((current) => ({ ...current, [guestId]: answer }));
+  };
+
+  const submitAnswers = async () => {
+    if (!party || !foundGuest) return;
+
+    const guests = party.guests.filter((guest) => guest.id);
+    const hasMissingResponse = guests.some((guest) => responses[guest.id!] === null || responses[guest.id!] === undefined);
+
+    if (hasMissingResponse) {
+      setError("Please choose yes or no for each guest in your party.");
+      return;
+    }
+
+    const hasMissingMeal = guests.some(
+      (guest) => responses[guest.id!] === true && !selectedMeals[guest.id!],
+    );
+
+    if (hasMissingMeal) {
+      setError("Please choose a meal for each guest who is attending.");
+      return;
+    }
+
+    const hasMissingRehearsalResponse = guests.some(
+      (guest) =>
+        guest.invitedToRehearsalDinner &&
+        (rehearsalResponses[guest.id!] === null || rehearsalResponses[guest.id!] === undefined),
+    );
+
+    if (hasMissingRehearsalResponse) {
+      setError("Please answer the rehearsal dinner RSVP for each invited guest.");
+      return;
+    }
 
     setStatus("loading");
     setError("");
-    setAttending(answer);
 
     try {
-      const endpoint = record?.id
-        ? `${API_BASE_URL}/api/rsvps/updateRsvp/${record.id}`
-        : `${API_BASE_URL}/api/rsvps/createRsvp`;
+      const bodyGuests = guests.map((guest) => ({
+        id: guest.id,
+        guestName: guest.guestName,
+        email: guest.email,
+        attending: responses[guest.id!],
+        mealChoice: responses[guest.id!] === true ? selectedMeals[guest.id!] : null,
+        rehearsalDinnerAttending: guest.invitedToRehearsalDinner
+          ? rehearsalResponses[guest.id!]
+          : null,
+        message: guest.message,
+      }));
 
-      const response = await fetch(endpoint, {
-        method: record?.id ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          guestName: displayName,
-          email: record?.email,
-          attending: answer,
-          mealChoice: record?.mealChoice,
-          message: record?.message,
-        }),
-      });
+      const response = party.id
+        ? await fetch(`${API_BASE_URL}/api/rsvps/updateParty/${party.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ guests: bodyGuests }),
+          })
+        : await fetch(`${API_BASE_URL}/api/rsvps/updateRsvp/${foundGuest.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              guestName: foundGuest.guestName,
+              email: foundGuest.email,
+              attending: responses[foundGuest.id!],
+              mealChoice:
+                responses[foundGuest.id!] === true ? selectedMeals[foundGuest.id!] : null,
+              rehearsalDinnerAttending: foundGuest.invitedToRehearsalDinner
+                ? rehearsalResponses[foundGuest.id!]
+                : null,
+              message: foundGuest.message,
+            }),
+          });
 
       if (!response.ok) {
         throw new Error("Submit failed");
       }
 
-      const data = (await response.json()) as RsvpRecord;
-      setRecord(data);
-      setStatus("submitted");
-      if (answer) {
-        window.setTimeout(() => setAttending(true), 0);
+      const data = (await response.json()) as RsvpParty | RsvpRecord;
+      if ("guests" in data) {
+        setParty(data);
+      } else {
+        setFoundGuest(data);
+        setParty({ id: null, partyName: data.guestName, guests: [data] });
       }
+      setStatus("submitted");
     } catch {
       setStatus("found");
       setError("We could not save your RSVP just yet. Please try again.");
@@ -154,7 +286,7 @@ const Rsvp = () => {
 
   return (
     <main className="min-h-screen bg-cream px-6 py-10 text-sepia">
-      {status === "submitted" && attending && <ConfettiRain />}
+      {status === "submitted" && hasAccepted && <ConfettiRain />}
 
       <div className="mx-auto flex max-w-4xl items-center justify-between">
         <Link
@@ -174,12 +306,12 @@ const Rsvp = () => {
             find your invitation
           </h1>
           <p className="mx-auto mt-6 max-w-xl font-serif text-xl italic leading-relaxed text-sepia/70 md:text-2xl">
-            Enter your name as it appears on your invitation, then let us know if you will be
-            celebrating with us.
+            Enter your name as it appears on your invitation, then let us know who in your party
+            will be celebrating with us.
           </p>
         </div>
 
-        <div className="mx-auto mt-12 w-full max-w-xl border border-sepia/10 bg-background p-5 shadow-[var(--shadow-soft)] md:p-7">
+        <div className="mx-auto mt-12 w-full max-w-2xl border border-sepia/10 bg-background p-5 shadow-[var(--shadow-soft)] md:p-7">
           <form onSubmit={lookupRsvp} className="flex flex-col gap-4 sm:flex-row">
             <label className="sr-only" htmlFor="guest-name">
               Guest name
@@ -215,39 +347,122 @@ const Rsvp = () => {
             <p className="mt-4 text-left text-sm leading-relaxed text-red-900/75">{error}</p>
           )}
 
-          {(status === "found" || status === "submitted") && record && (
+          {(status === "found" || status === "submitted") && party && (
             <div className="mt-7 border border-sepia/10 bg-cream p-5 text-center">
               <p className="text-xs uppercase tracking-eyebrow text-gold">Invitation found</p>
-              <h2 className="mt-3 font-serif text-3xl text-sepia">{record.guestName}</h2>
+              <h2 className="mt-3 font-serif text-3xl text-sepia">{displayName}</h2>
 
               {status === "submitted" ? (
                 <p className="mx-auto mt-5 max-w-sm font-serif text-xl italic leading-relaxed text-sepia/75">
-                  Thank you. Your RSVP has been saved as{" "}
-                  {attending ? "joyfully attending" : "unable to attend"}.
+                  Thank you. Your party RSVP has been saved.
                 </p>
               ) : (
                 <>
                   <p className="mx-auto mt-5 max-w-sm text-sm leading-relaxed text-sepia/65">
-                    Will you be joining us on September 26, 2026?
+                    Please respond for each guest in your party.
                   </p>
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    <button
-                      type="button"
-                      onClick={() => submitAnswer(true)}
-                      className="inline-flex min-h-12 items-center justify-center gap-2 bg-sepia px-5 text-xs uppercase tracking-eyebrow text-cream transition-colors hover:bg-gold"
-                    >
-                      <Check className="h-4 w-4" />
-                      Yes, attending
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => submitAnswer(false)}
-                      className="inline-flex min-h-12 items-center justify-center gap-2 border border-sepia/20 px-5 text-xs uppercase tracking-eyebrow text-sepia transition-colors hover:border-gold hover:text-gold"
-                    >
-                      <X className="h-4 w-4" />
-                      No, regrets
-                    </button>
+                  <div className="mt-7 space-y-4 text-left">
+                    {party.guests.map((guest) => (
+                      <div
+                        key={guest.id ?? guest.guestName}
+                        className="border border-sepia/10 bg-background p-4"
+                      >
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                          <p className="font-serif text-2xl text-sepia">{guest.guestName}</p>
+                          <div className="grid grid-cols-2 gap-2 sm:w-[260px]">
+                            <button
+                              type="button"
+                              onClick={() => setGuestAnswer(guest.id, true)}
+                              className={`inline-flex min-h-11 items-center justify-center gap-2 border px-4 text-xs uppercase tracking-eyebrow transition-colors ${
+                                responses[guest.id!] === true
+                                  ? "border-sepia bg-sepia text-cream"
+                                  : "border-sepia/20 text-sepia hover:border-gold hover:text-gold"
+                              }`}
+                            >
+                              <Check className="h-4 w-4" />
+                              Yes
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setGuestAnswer(guest.id, false)}
+                              className={`inline-flex min-h-11 items-center justify-center gap-2 border px-4 text-xs uppercase tracking-eyebrow transition-colors ${
+                                responses[guest.id!] === false
+                                  ? "border-sepia bg-sepia text-cream"
+                                  : "border-sepia/20 text-sepia hover:border-gold hover:text-gold"
+                              }`}
+                            >
+                              <X className="h-4 w-4" />
+                              No
+                            </button>
+                          </div>
+                        </div>
+                        {responses[guest.id!] === true && (
+                          <div className="mt-4 border-t border-sepia/10 pt-4">
+                            <p className="text-xs uppercase tracking-eyebrow text-sepia/45">
+                              Meal choice
+                            </p>
+                            <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                              {mealChoices.map((meal) => (
+                                <button
+                                  key={meal.value}
+                                  type="button"
+                                  onClick={() => setGuestMeal(guest.id, meal.value)}
+                                  className={
+                                    selectedMeals[guest.id!] === meal.value
+                                      ? "min-h-10 border border-gold bg-gold/15 px-3 text-xs uppercase tracking-[0.16em] text-sepia transition-colors"
+                                      : "min-h-10 border border-sepia/15 px-3 text-xs uppercase tracking-[0.16em] text-sepia/65 transition-colors hover:border-gold hover:text-gold"
+                                  }
+                                >
+                                  {meal.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {guest.invitedToRehearsalDinner && (
+                          <div className="mt-4 border-t border-sepia/10 pt-4">
+                            <p className="text-xs uppercase tracking-eyebrow text-gold">
+                              Rehearsal dinner
+                            </p>
+                            <p className="mt-2 text-sm leading-relaxed text-sepia/60">
+                              Will this guest attend the rehearsal dinner?
+                            </p>
+                            <div className="mt-3 grid grid-cols-2 gap-2 sm:w-[260px]">
+                              <button
+                                type="button"
+                                onClick={() => setRehearsalAnswer(guest.id, true)}
+                                className={
+                                  rehearsalResponses[guest.id!] === true
+                                    ? "inline-flex min-h-10 items-center justify-center border border-sepia bg-sepia px-4 text-xs uppercase tracking-eyebrow text-cream"
+                                    : "inline-flex min-h-10 items-center justify-center border border-sepia/20 px-4 text-xs uppercase tracking-eyebrow text-sepia transition-colors hover:border-gold hover:text-gold"
+                                }
+                              >
+                                Yes
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setRehearsalAnswer(guest.id, false)}
+                                className={
+                                  rehearsalResponses[guest.id!] === false
+                                    ? "inline-flex min-h-10 items-center justify-center border border-sepia bg-sepia px-4 text-xs uppercase tracking-eyebrow text-cream"
+                                    : "inline-flex min-h-10 items-center justify-center border border-sepia/20 px-4 text-xs uppercase tracking-eyebrow text-sepia transition-colors hover:border-gold hover:text-gold"
+                                }
+                              >
+                                No
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => void submitAnswers()}
+                    className="mt-6 inline-flex min-h-12 w-full items-center justify-center bg-sepia px-5 text-xs uppercase tracking-eyebrow text-cream transition-colors hover:bg-gold"
+                  >
+                    Save party RSVP
+                  </button>
                 </>
               )}
             </div>

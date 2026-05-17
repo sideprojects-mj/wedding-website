@@ -1,21 +1,48 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Lock, Plus, RefreshCw, Trash2 } from "lucide-react";
+import { ArrowLeft, Lock, Plus, RefreshCw, Trash2, UserPlus } from "lucide-react";
 import { ADMIN_PASSCODE, API_BASE_URL } from "@/config";
+
+type MealChoice = "BEEF" | "CHICKEN" | "VEGETARIAN";
 
 type RsvpRecord = {
   id?: number;
   guestName: string;
   email?: string | null;
-  attending?: boolean;
-  mealChoice?: string | null;
+  attending?: boolean | null;
+  responded?: boolean | null;
+  invitedToRehearsalDinner?: boolean | null;
+  rehearsalDinnerAttending?: boolean | null;
+  rehearsalDinnerResponded?: boolean | null;
+  mealChoice?: MealChoice | null;
   message?: string | null;
   submittedAt?: string;
+  partyId?: number | null;
+  partyName?: string | null;
+};
+
+type RsvpParty = {
+  id: number;
+  partyName: string;
+  guests: RsvpRecord[];
 };
 
 const PASSCODE_STORAGE_KEY = "wedding-admin-unlocked";
 
 const keypad = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "delete"];
+
+const mealChoiceLabel = (mealChoice?: MealChoice | null) => {
+  if (mealChoice === "BEEF") return "Beef";
+  if (mealChoice === "CHICKEN") return "Chicken";
+  if (mealChoice === "VEGETARIAN") return "Vegetarian";
+  return "-";
+};
+
+const rehearsalStatusLabel = (rsvp: RsvpRecord) => {
+  if (!rsvp.invitedToRehearsalDinner) return "Not invited";
+  if (!rsvp.rehearsalDinnerResponded) return "No response";
+  return rsvp.rehearsalDinnerAttending ? "Attending" : "Declined";
+};
 
 const Admin = () => {
   const [enteredCode, setEnteredCode] = useState("");
@@ -24,8 +51,15 @@ const Admin = () => {
   );
   const [passcodeError, setPasscodeError] = useState("");
   const [rsvps, setRsvps] = useState<RsvpRecord[]>([]);
+  const [parties, setParties] = useState<RsvpParty[]>([]);
+  const [partyName, setPartyName] = useState("");
   const [guestName, setGuestName] = useState("");
   const [email, setEmail] = useState("");
+  const [firstGuestRehearsalInvite, setFirstGuestRehearsalInvite] = useState(false);
+  const [selectedPartyId, setSelectedPartyId] = useState("");
+  const [memberName, setMemberName] = useState("");
+  const [memberEmail, setMemberEmail] = useState("");
+  const [memberRehearsalInvite, setMemberRehearsalInvite] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -38,25 +72,43 @@ const Admin = () => {
     [rsvps],
   );
 
+  const sortedParties = useMemo(
+    () =>
+      [...parties].sort((a, b) =>
+        (a.partyName || "").localeCompare(b.partyName || "", undefined, { sensitivity: "base" }),
+      ),
+    [parties],
+  );
+
   const totals = useMemo(
     () => ({
       invited: rsvps.length,
-      attending: rsvps.filter((rsvp) => rsvp.attending).length,
-      declined: rsvps.filter((rsvp) => rsvp.attending === false).length,
+      parties: parties.length,
+      attending: rsvps.filter((rsvp) => rsvp.responded && rsvp.attending === true).length,
+      declined: rsvps.filter((rsvp) => rsvp.responded && rsvp.attending === false).length,
+      pending: rsvps.filter((rsvp) => !rsvp.responded).length,
     }),
-    [rsvps],
+    [rsvps, parties],
   );
 
-  const fetchRsvps = async () => {
+  const fetchData = async () => {
     setLoading(true);
     setMessage("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/rsvps/getAll`);
-      if (!response.ok) throw new Error("Failed to load RSVPs");
+      const [rsvpResponse, partyResponse] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/rsvps/getAll`),
+        fetch(`${API_BASE_URL}/api/rsvps/getParties`),
+      ]);
+      if (!rsvpResponse.ok || !partyResponse.ok) throw new Error("Failed to load RSVPs");
 
-      const data = (await response.json()) as RsvpRecord[];
-      setRsvps(data);
+      const rsvpData = (await rsvpResponse.json()) as RsvpRecord[];
+      const partyData = (await partyResponse.json()) as RsvpParty[];
+      setRsvps(rsvpData);
+      setParties(partyData);
+      if (!selectedPartyId && partyData[0]?.id) {
+        setSelectedPartyId(String(partyData[0].id));
+      }
     } catch {
       setMessage("Could not load RSVPs. Check that the backend is running.");
     } finally {
@@ -66,7 +118,7 @@ const Admin = () => {
 
   useEffect(() => {
     if (unlocked) {
-      void fetchRsvps();
+      void fetchData();
     }
   }, [unlocked]);
 
@@ -93,12 +145,13 @@ const Admin = () => {
     }
   };
 
-  const addInvite = async (event: FormEvent<HTMLFormElement>) => {
+  const createParty = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const trimmedName = guestName.trim();
+    const trimmedPartyName = partyName.trim();
+    const trimmedGuestName = guestName.trim();
 
-    if (!trimmedName) {
-      setMessage("Enter a guest name before adding an invite.");
+    if (!trimmedPartyName || !trimmedGuestName) {
+      setMessage("Enter a party name and at least one guest name.");
       return;
     }
 
@@ -106,28 +159,116 @@ const Admin = () => {
     setMessage("");
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/rsvps/createRsvp`, {
+      const response = await fetch(`${API_BASE_URL}/api/rsvps/createParty`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          partyName: trimmedPartyName,
+          guestName: trimmedGuestName,
+          email: email.trim() || null,
+          invitedToRehearsalDinner: firstGuestRehearsalInvite,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to create party");
+
+      const created = (await response.json()) as RsvpParty;
+      setParties((current) => [...current, created]);
+      setRsvps((current) => [...current, ...created.guests]);
+      setSelectedPartyId(String(created.id));
+      setPartyName("");
+      setGuestName("");
+      setEmail("");
+      setFirstGuestRehearsalInvite(false);
+      setMessage(`${created.partyName} was added.`);
+    } catch {
+      setMessage("Could not add this party. The backend may be offline.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const addPartyMember = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedName = memberName.trim();
+
+    if (!selectedPartyId || !trimmedName) {
+      setMessage("Choose a party and enter a guest name.");
+      return;
+    }
+
+    setSaving(true);
+    setMessage("");
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/rsvps/parties/${selectedPartyId}/guests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           guestName: trimmedName,
-          email: email.trim() || null,
-          attending: false,
+          email: memberEmail.trim() || null,
+          invitedToRehearsalDinner: memberRehearsalInvite,
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to create RSVP");
+      if (!response.ok) throw new Error("Failed to add guest");
 
       const created = (await response.json()) as RsvpRecord;
       setRsvps((current) => [...current, created]);
-      setGuestName("");
-      setEmail("");
-      setMessage(`${created.guestName} was added.`);
+      setParties((current) =>
+        current.map((party) =>
+          party.id === Number(selectedPartyId)
+            ? { ...party, guests: [...party.guests, created] }
+            : party,
+        ),
+      );
+      setMemberName("");
+      setMemberEmail("");
+      setMemberRehearsalInvite(false);
+      setMessage(`${created.guestName} was added to ${created.partyName}.`);
     } catch {
-      setMessage("Could not add this invite. It may already exist, or the backend may be offline.");
+      setMessage("Could not add this guest. The backend may be offline.");
     } finally {
       setSaving(false);
     }
+  };
+
+  const toggleRehearsalInvite = async (rsvp: RsvpRecord) => {
+    if (!rsvp.id) return;
+
+    const nextInvited = !rsvp.invitedToRehearsalDinner;
+    setMessage("");
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/rsvps/guests/${rsvp.id}/config`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ invitedToRehearsalDinner: nextInvited }),
+        },
+      );
+
+      if (!response.ok) throw new Error("Failed to update rehearsal invite");
+
+      const updated = (await response.json()) as RsvpRecord;
+      setRsvps((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+      setParties((current) =>
+        current.map((party) => ({
+          ...party,
+          guests: party.guests.map((guest) => (guest.id === updated.id ? updated : guest)),
+        })),
+      );
+    } catch {
+      setMessage("Could not update rehearsal dinner invite.");
+    }
+  };
+
+  const getStatusLabel = (rsvp: RsvpRecord) => {
+    if (!rsvp.responded) return "No response";
+    if (rsvp.attending === true) return "Attending";
+    if (rsvp.attending === false) return "Declined";
+    return "No response";
   };
 
   if (!unlocked) {
@@ -221,7 +362,7 @@ const Admin = () => {
           </div>
           <button
             type="button"
-            onClick={() => void fetchRsvps()}
+            onClick={() => void fetchData()}
             disabled={loading}
             className="inline-flex min-h-11 items-center justify-center gap-2 border border-sepia/15 px-5 text-xs uppercase tracking-eyebrow text-sepia transition-colors hover:border-gold hover:text-gold disabled:opacity-60"
           >
@@ -230,11 +371,13 @@ const Admin = () => {
           </button>
         </div>
 
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-5">
           {[
             { label: "Invites", value: totals.invited },
+            { label: "Parties", value: totals.parties },
             { label: "Attending", value: totals.attending },
-            { label: "Not attending", value: totals.declined },
+            { label: "Declined", value: totals.declined },
+            { label: "Pending", value: totals.pending },
           ].map((total) => (
             <div key={total.label} className="border border-sepia/10 bg-background p-5">
               <p className="text-xs uppercase tracking-eyebrow text-sepia/45">{total.label}</p>
@@ -244,41 +387,120 @@ const Admin = () => {
         </div>
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-          <form onSubmit={addInvite} className="border border-sepia/10 bg-background p-5 md:p-7">
-            <h2 className="font-serif text-3xl text-sepia">Add invite</h2>
-            <div className="mt-6 space-y-4">
-              <label className="block">
-                <span className="text-xs uppercase tracking-eyebrow text-sepia/50">Guest name</span>
-                <input
-                  value={guestName}
-                  onChange={(event) => setGuestName(event.target.value)}
-                  className="mt-2 min-h-12 w-full border border-sepia/15 bg-cream px-4 font-serif text-lg outline-none transition-colors focus:border-gold"
-                  placeholder="Full name"
-                />
-              </label>
-              <label className="block">
-                <span className="text-xs uppercase tracking-eyebrow text-sepia/50">
-                  Email optional
-                </span>
-                <input
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  className="mt-2 min-h-12 w-full border border-sepia/15 bg-cream px-4 font-serif text-lg outline-none transition-colors focus:border-gold"
-                  placeholder="name@example.com"
-                  type="email"
-                />
-              </label>
-            </div>
-            <button
-              type="submit"
-              disabled={saving}
-              className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 bg-sepia px-5 text-xs uppercase tracking-eyebrow text-cream transition-colors hover:bg-gold disabled:opacity-60"
-            >
-              <Plus className="h-4 w-4" />
-              {saving ? "Adding" : "Add invite"}
-            </button>
-            {message && <p className="mt-4 text-sm leading-relaxed text-sepia/65">{message}</p>}
-          </form>
+          <div className="space-y-8">
+            <form onSubmit={createParty} className="border border-sepia/10 bg-background p-5 md:p-7">
+              <h2 className="font-serif text-3xl text-sepia">Add party</h2>
+              <div className="mt-6 space-y-4">
+                <label className="block">
+                  <span className="text-xs uppercase tracking-eyebrow text-sepia/50">Party name</span>
+                  <input
+                    value={partyName}
+                    onChange={(event) => setPartyName(event.target.value)}
+                    className="mt-2 min-h-12 w-full border border-sepia/15 bg-cream px-4 font-serif text-lg outline-none transition-colors focus:border-gold"
+                    placeholder="The Smith Party"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs uppercase tracking-eyebrow text-sepia/50">First guest</span>
+                  <input
+                    value={guestName}
+                    onChange={(event) => setGuestName(event.target.value)}
+                    className="mt-2 min-h-12 w-full border border-sepia/15 bg-cream px-4 font-serif text-lg outline-none transition-colors focus:border-gold"
+                    placeholder="Mr Smith"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs uppercase tracking-eyebrow text-sepia/50">
+                    Email optional
+                  </span>
+                  <input
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    className="mt-2 min-h-12 w-full border border-sepia/15 bg-cream px-4 font-serif text-lg outline-none transition-colors focus:border-gold"
+                    placeholder="name@example.com"
+                    type="email"
+                  />
+                </label>
+                <label className="flex items-center gap-3 border border-sepia/10 bg-cream px-4 py-3 text-sm text-sepia/70">
+                  <input
+                    type="checkbox"
+                    checked={firstGuestRehearsalInvite}
+                    onChange={(event) => setFirstGuestRehearsalInvite(event.target.checked)}
+                    className="h-4 w-4 accent-sepia"
+                  />
+                  Invite first guest to rehearsal dinner
+                </label>
+              </div>
+              <button
+                type="submit"
+                disabled={saving}
+                className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 bg-sepia px-5 text-xs uppercase tracking-eyebrow text-cream transition-colors hover:bg-gold disabled:opacity-60"
+              >
+                <Plus className="h-4 w-4" />
+                {saving ? "Adding" : "Add party"}
+              </button>
+            </form>
+
+            <form onSubmit={addPartyMember} className="border border-sepia/10 bg-background p-5 md:p-7">
+              <h2 className="font-serif text-3xl text-sepia">Add guest to party</h2>
+              <div className="mt-6 space-y-4">
+                <label className="block">
+                  <span className="text-xs uppercase tracking-eyebrow text-sepia/50">Party</span>
+                  <select
+                    value={selectedPartyId}
+                    onChange={(event) => setSelectedPartyId(event.target.value)}
+                    className="mt-2 min-h-12 w-full border border-sepia/15 bg-cream px-4 font-serif text-lg outline-none transition-colors focus:border-gold"
+                  >
+                    <option value="">Choose a party</option>
+                    {sortedParties.map((party) => (
+                      <option key={party.id} value={party.id}>
+                        {party.partyName}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block">
+                  <span className="text-xs uppercase tracking-eyebrow text-sepia/50">Guest name</span>
+                  <input
+                    value={memberName}
+                    onChange={(event) => setMemberName(event.target.value)}
+                    className="mt-2 min-h-12 w-full border border-sepia/15 bg-cream px-4 font-serif text-lg outline-none transition-colors focus:border-gold"
+                    placeholder="Mrs Smith"
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-xs uppercase tracking-eyebrow text-sepia/50">
+                    Email optional
+                  </span>
+                  <input
+                    value={memberEmail}
+                    onChange={(event) => setMemberEmail(event.target.value)}
+                    className="mt-2 min-h-12 w-full border border-sepia/15 bg-cream px-4 font-serif text-lg outline-none transition-colors focus:border-gold"
+                    placeholder="name@example.com"
+                    type="email"
+                  />
+                </label>
+                <label className="flex items-center gap-3 border border-sepia/10 bg-cream px-4 py-3 text-sm text-sepia/70">
+                  <input
+                    type="checkbox"
+                    checked={memberRehearsalInvite}
+                    onChange={(event) => setMemberRehearsalInvite(event.target.checked)}
+                    className="h-4 w-4 accent-sepia"
+                  />
+                  Invite guest to rehearsal dinner
+                </label>
+              </div>
+              <button
+                type="submit"
+                disabled={saving}
+                className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 bg-sepia px-5 text-xs uppercase tracking-eyebrow text-cream transition-colors hover:bg-gold disabled:opacity-60"
+              >
+                <UserPlus className="h-4 w-4" />
+                {saving ? "Adding" : "Add guest"}
+              </button>
+              {message && <p className="mt-4 text-sm leading-relaxed text-sepia/65">{message}</p>}
+            </form>
+          </div>
 
           <div className="border border-sepia/10 bg-background">
             <div className="flex items-center justify-between border-b border-sepia/10 p-5">
@@ -288,17 +510,20 @@ const Admin = () => {
               </p>
             </div>
 
-            <div className="max-h-[620px] overflow-auto">
+            <div className="max-h-[780px] overflow-auto">
               {sortedRsvps.length === 0 ? (
                 <p className="p-5 text-sm text-sepia/60">
                   {loading ? "Loading RSVPs..." : "No RSVPs yet."}
                 </p>
               ) : (
-                <table className="w-full min-w-[640px] border-collapse text-left">
+                <table className="w-full min-w-[980px] border-collapse text-left">
                   <thead className="sticky top-0 bg-cream">
                     <tr className="border-b border-sepia/10 text-xs uppercase tracking-[0.18em] text-sepia/45">
                       <th className="px-5 py-4 font-normal">Name</th>
+                      <th className="px-5 py-4 font-normal">Party</th>
                       <th className="px-5 py-4 font-normal">Status</th>
+                      <th className="px-5 py-4 font-normal">Meal</th>
+                      <th className="px-5 py-4 font-normal">Rehearsal</th>
                       <th className="px-5 py-4 font-normal">Email</th>
                       <th className="px-5 py-4 font-normal">Submitted</th>
                     </tr>
@@ -307,16 +532,33 @@ const Admin = () => {
                     {sortedRsvps.map((rsvp) => (
                       <tr key={rsvp.id ?? rsvp.guestName} className="border-b border-sepia/10">
                         <td className="px-5 py-4 font-serif text-lg text-sepia">{rsvp.guestName}</td>
+                        <td className="px-5 py-4 text-sm text-sepia/65">{rsvp.partyName || "-"}</td>
                         <td className="px-5 py-4">
                           <span
                             className={`inline-flex rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.16em] ${
-                              rsvp.attending
+                              rsvp.responded && rsvp.attending === true
                                 ? "bg-gold/15 text-sepia"
-                                : "bg-sepia/10 text-sepia/60"
+                                : rsvp.responded && rsvp.attending === false
+                                  ? "bg-red-900/10 text-red-950/70"
+                                  : "bg-sepia/10 text-sepia/60"
                             }`}
                           >
-                            {rsvp.attending ? "Attending" : "No response"}
+                            {getStatusLabel(rsvp)}
                           </span>
+                        </td>
+                        <td className="px-5 py-4 text-sm text-sepia/65">{mealChoiceLabel(rsvp.mealChoice)}</td>
+                        <td className="px-5 py-4 text-sm text-sepia/65">
+                          <button
+                            type="button"
+                            onClick={() => void toggleRehearsalInvite(rsvp)}
+                            className={
+                              rsvp.invitedToRehearsalDinner
+                                ? "rounded-full bg-gold/15 px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-sepia transition-colors hover:bg-gold/25"
+                                : "rounded-full bg-sepia/10 px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-sepia/55 transition-colors hover:bg-sepia/15"
+                            }
+                          >
+                            {rehearsalStatusLabel(rsvp)}
+                          </button>
                         </td>
                         <td className="px-5 py-4 text-sm text-sepia/65">{rsvp.email || "-"}</td>
                         <td className="px-5 py-4 text-sm text-sepia/55">

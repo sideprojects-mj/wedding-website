@@ -1,12 +1,12 @@
 package com.example.weddingSite;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public class RsvpRequest {
+public class PartyMemberRsvpRequest {
 
-    @NotBlank
-    private String guestName;
+    @NotNull
+    private Long id;
 
     @Email
     private String email;
@@ -21,12 +21,8 @@ public class RsvpRequest {
 
     private String message;
 
-    private Long partyId;
-
-    private String partyName;
-
-    public String getGuestName() {
-        return guestName;
+    public Long getId() {
+        return id;
     }
 
     public String getEmail() {
@@ -51,13 +47,5 @@ public class RsvpRequest {
 
     public String getMessage() {
         return message;
-    }
-
-    public Long getPartyId() {
-        return partyId;
-    }
-
-    public String getPartyName() {
-        return partyName;
     }
 }
