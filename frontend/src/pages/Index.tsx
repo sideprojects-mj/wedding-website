@@ -12,7 +12,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 
 import crest from "@/assets/wedding-crest.png";
 import heroImg from "@/assets/couple-hero.jpg";
-import p1 from "@/assets/collage-1.jpg";
+import p1 from "@/assets/IMG_0420.JPG";
 import p2 from "@/assets/collage-2.jpg";
 import p3 from "@/assets/collage-3.jpg";
 import p4 from "@/assets/collage-4.jpg";
