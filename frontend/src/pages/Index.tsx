@@ -12,8 +12,8 @@ import SmoothScroll from "@/components/SmoothScroll";
 
 import crest from "@/assets/wedding-crest.png";
 import hero2 from "@/assets/hero2 copimproved.jpg";
-import p1 from "@/assets/benchStanding.JPG";
-import p2 from "@/assets/bridgeLooking.JPG";
+import p1 from "@/assets/benchStanding improved.jpg";
+import p2 from "@/assets/bridgeLooking improved.JPG";
 import p4 from "@/assets/bridgeStanding.JPG";
 import p6 from "@/assets/ringChest.JPG";
 
@@ -231,21 +231,21 @@ const scheduleItems = [
     time: "3:30 PM-4:30 PM",
     title: "Nuptual Mass",
     venue: "Sts. Peter & Paul Catholic Church",
-    address: "1746 Herbelin Road, New Braunfels, TX 78132",
+    address: "386 N Castell Avenue, New Braunfels, TX 78130",
     note: "Please arrive 15 minutes before Mass begins"
   },
   {
     time: "5:00 PM-6:00 PM",
     title: "Cocktail Hour",
     venue: "The Gardens of Cranesbury View",
-    address: "1746 Herbelin Road, New Braunfels, TX 78132",
-    note: "Attire: Black Tie",
+    address: "1470 S Cranes Mill Rd, New Braunfels, TX 78132",
+    note: "Attire: Spring Black Tie",
   },
   {
     time: "6:00 PM-12:00 AM",
     title: "Reception",
     venue: "The Gardens of Cranesbury View",
-    address: "1746 Herbelin Road, New Braunfels, TX 78132",
+    address: "1470 S Cranes Mill Rd, New Braunfels, TX 78132",
     note: "Dinner, drinks, and dancing",
   },
 ];
