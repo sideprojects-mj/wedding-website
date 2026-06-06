@@ -35,12 +35,6 @@ const MinimalNav = () => {
         </a>
         <div className="flex items-center gap-3 md:gap-4">
           <a
-            href="#travel"
-            className="text-xs md:text-sm uppercase tracking-eyebrow text-sepia/80 hover:text-sepia transition-colors px-2 py-1"
-          >
-            Travel
-          </a>
-          <a
             href="#faq"
             className="text-xs md:text-sm uppercase tracking-eyebrow text-sepia/80 hover:text-sepia transition-colors px-2 py-1"
           >
