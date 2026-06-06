@@ -736,6 +736,99 @@ const Registry = () => (
   </section>
 );
 
+
+/* ---------------- Travel ---------------- */
+const hotelBlocks = [
+  {
+    name: "Hacienda del Rio",
+    discountCode: "b580004",
+    deadline: "Please book by August 11, 2026",
+    address1: "10 minute drive from the Church",
+    address2: "18 minute drive from the Venue",
+    note: "We will add the booking link and group code here once the hotel block is finalized.",
+    bookingUrl: "#",
+  },
+  {
+    name: "Petit Cowboy",
+    discountCode: "Coming soon",
+    deadline: "Please book by August 11, 2026",
+    address1: "8 minute drive from the Church",
+    address2: "19 minute drive the from the Venue",
+    note: "This card can be replaced with the second hotel block details.",
+    bookingUrl: "#",
+  },
+  {
+    name: "Courtyard by Marriott",
+    discountCode: "FJWFJWA",
+    deadline: "Please book by August 11, 2026",
+    address1: "8 minute drive from the Church",
+    address2: "19 minute drive the from the Venue",
+    note: "This card can be replaced with the second hotel block details.",
+    bookingUrl: "#",
+  },
+];
+
+const Travel = () => (
+  <section id="travel" className="bg-cream px-6 py-28 md:py-36">
+    <div className="mx-auto max-w-6xl">
+      <Reveal className="mx-auto max-w-3xl text-center">
+        <p className="text-xs uppercase tracking-eyebrow text-gold">travel</p>
+        <h2 className="mt-5 font-serif text-5xl lowercase leading-none text-sepia md:text-7xl">
+          travel accomodations
+        </h2>
+        <p className="mx-auto mt-7 max-w-2xl font-serif text-xl italic leading-relaxed text-sepia/70 md:text-2xl">
+          We have reserved room blocks nearby for anyone traveling in for the weekend.
+        </p>
+      </Reveal>
+
+      <div className="mt-14 grid gap-6 md:grid-cols-3">
+        {hotelBlocks.map((hotel, index) => (
+          <motion.article
+            key={hotel.name}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.28 }}
+            transition={{ duration: 0.85, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+            className="border border-sepia/10 bg-background p-5 text-left shadow-[var(--shadow-soft)] md:p-6"
+          >
+            <p className="text-[10px] uppercase tracking-eyebrow text-gold">room block</p>
+            <h3 className="mt-4 font-serif text-3xl leading-tight text-sepia">
+              {hotel.name}
+            </h3>
+            <div className="mt-6 space-y-4 border-y border-sepia/10 py-5">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] text-sepia/100">Discount Code</p>
+                <p className="mt-1 font-serif text-lg leading-snug text-sepia">{hotel.discountCode}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] text-sepia/100">Deadline</p>
+                <p className="mt-1 font-serif text-lg leading-snug text-sepia">{hotel.deadline}</p>
+              </div>
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] text-sepia/90">Location</p>
+                <p className="mt-1 font-serif text-lg leading-snug text-sepia">{hotel.address1}</p>
+                <p className="mt-1 font-serif text-lg leading-snug text-sepia">{hotel.address2}</p>
+              </div>
+            </div>
+            <p className="mt-5 text-sm leading-relaxed text-sepia/65">{hotel.note}</p>
+            <a
+              href={hotel.bookingUrl}
+              className="mt-6 inline-flex items-center gap-2 text-xs uppercase tracking-eyebrow text-sepia transition-colors hover:text-gold"
+              aria-disabled={hotel.bookingUrl === "#"}
+              onClick={(event) => {
+                if (hotel.bookingUrl === "#") event.preventDefault();
+              }}
+            >
+              Booking details
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </motion.article>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 /* ---------------- FAQ ---------------- */
 const faqs = [
   { q: "How do I RSVP?", a: "RSVP will be available closer to the wedding — we'll send a note when it's ready." },
@@ -828,6 +921,7 @@ const Index = () => {
         
         <Venue />
         <Registry />
+        <Travel />
         <FAQ />
         <Closing />
         <Footer />
