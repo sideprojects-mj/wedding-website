@@ -12,11 +12,10 @@ import SmoothScroll from "@/components/SmoothScroll";
 
 import crest from "@/assets/wedding-crest.png";
 import hero2 from "@/assets/hero2.JPG";
-import p1 from "@/assets/IMG_0420.JPG";
-import p2 from "@/assets/collage-2.jpg";
-import p3 from "@/assets/collage-3.jpg";
-import p4 from "@/assets/collage-4.jpg";
-import p6 from "@/assets/collage-6.jpg";
+import p1 from "@/assets/benchStanding.JPG";
+import p2 from "@/assets/bridgeLooking.JPG";
+import p4 from "@/assets/bridgeStanding.JPG";
+import p6 from "@/assets/ringChest.JPG";
 
 const WEDDING_DATE = new Date("2026-09-26T15:00:00");
 const CHURCH_IMAGE_URL =
