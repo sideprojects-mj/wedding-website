@@ -13,7 +13,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import crest from "@/assets/wedding-crest.png";
 import hero2 from "@/assets/hero2 copimproved.jpg";
 import p1 from "@/assets/benchStanding improved.jpg";
-import p2 from "@/assets/bridgeLooking improved.JPG";
+import p2 from "@/assets/bridgeLooking improved.jpg";
 import p4 from "@/assets/bridgeStanding.JPG";
 import p6 from "@/assets/ringChest.JPG";
 import churchImage from "@/assets/churchImage.png";
