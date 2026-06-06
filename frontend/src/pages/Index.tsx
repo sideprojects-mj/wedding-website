@@ -637,16 +637,18 @@ const Venue = () => {
 /* ---------------- Registry ---------------- */
 const registryItems = [
   {
-    name: "Roulette 10-oz. Blue Band Mug",
-    detail: "$8.95 · 0 of 4 purchased",
+    name: "Crate & Barrel",
     image:
-      "https://cb.scene7.com/is/image/Crate/RouletteBlueBndMugSSS21/%24web_gr_list_desktop%24/240201103713/roulette-blue-band-mug.jpg",
+      "https://cb.scene7.com/is/image/Crate/OrgTurkishPIvBlStrHndTwlSHF25/$web_plp_card$/260606071332/OrgTurkishPIvBlStrHndTwlSHF25.jpg",
+    link: "https://www.crateandbarrel.com/gift-registry/grace-bascon-and-mark-josephs/r7507079",
+    detail: "$$"
   },
   {
-    name: "Bodega 17-Oz. Highball Glass",
-    detail: "$4.95 · 0 of 8 purchased",
+    name: "Bloomingdales",
     image:
-      "https://cb.scene7.com/is/image/Crate/BodegaGlass17ozSSS22/%24web_gr_list_desktop%24/240201123534/bodega-glass-17-oz.jpg",
+      "https://slimages.macysassets.com/is/image/BLM/products/4/optimized/11916254_fpx.tif?qlt=85,0&resMode=sharp2&op_usm=1.75,0.3,2,0&fmt=webp&wid=422&hei=528",
+    link: "https://www.bloomingdales.com/registry/Grace-Bascon-Mark-Josephs/1345321",
+    detail: "$$$"
   },
 ];
 
@@ -661,23 +663,34 @@ const Registry = () => (
         {/*<p className="mt-7 max-w-md font-serif text-xl italic leading-relaxed text-sepia/70 md:text-2xl">*/}
         {/*  Your presence is the gift. For anyone who has asked, we are registered at Crate & Barrel.*/}
         {/*</p>*/}
-        <a
-          href={REGISTRY_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-9 inline-flex items-center gap-3 rounded-full bg-sepia px-7 py-3 text-xs uppercase tracking-eyebrow text-cream transition-transform duration-300 hover:scale-105"
-        >
-          View registry
-          <ExternalLink className="h-4 w-4" />
-        </a>
+        <div className="mt-9 flex flex-col items-start gap-3">
+          <a
+            href={REGISTRY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-3 rounded-full bg-sepia px-7 py-3 text-xs uppercase tracking-eyebrow text-cream transition-transform duration-300 hover:scale-105"
+          >
+            Bloomingdales
+            <ExternalLink className="h-4 w-4" />
+          </a>
+          <a
+            href={REGISTRY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-3 rounded-full bg-sepia px-7 py-3 text-xs uppercase tracking-eyebrow text-cream transition-transform duration-300 hover:scale-105"
+          >
+            Crate & Barrel
+            <ExternalLink className="h-4 w-4" />
+          </a>
+        </div>
       </Reveal>
 
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-        className="overflow-hidden rounded-[8px] border border-sepia/10 bg-background shadow-[var(--shadow-soft)]"
+          initial={{opacity: 0, y: 40}}
+          whileInView={{opacity: 1, y: 0}}
+          viewport={{once: true, amount: 0.25}}
+          transition={{duration: 1, ease: [0.22, 1, 0.36, 1]}}
+          className="overflow-hidden rounded-[8px] border border-sepia/10 bg-background shadow-[var(--shadow-soft)]"
       >
         <div className="flex items-center justify-between border-b border-sepia/10 bg-cream/70 px-5 py-4">
           <div className="flex gap-2">
@@ -705,7 +718,7 @@ const Registry = () => (
             {registryItems.map((item, index) => (
               <motion.a
                 key={item.name}
-                href={REGISTRY_URL}
+                href={item.link}
                 target="_blank"
                 rel="noreferrer"
                 initial={{ opacity: 0, y: 24 }}
@@ -721,8 +734,9 @@ const Registry = () => (
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>
-                <p className="mt-4 font-serif text-lg text-sepia transition-colors group-hover:text-gold">
-                  {item.name}
+                <p className="mt-4 inline-flex items-center gap-2 font-serif text-lg text-sepia transition-colors group-hover:text-gold">
+                  <span>{item.name}</span>
+                  <ExternalLink className="h-4 w-4 shrink-0" />
                 </p>
                 <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-sepia/45">
                   {item.detail}
@@ -820,7 +834,6 @@ const Travel = () => (
               }}
             >
               Booking details
-              <ExternalLink className="h-4 w-4" />
             </a>
           </motion.article>
         ))}
