@@ -665,7 +665,7 @@ const Registry = () => (
         {/*</p>*/}
         <div className="mt-9 flex flex-col items-start gap-3">
           <a
-            href={REGISTRY_URL}
+            href="https://www.bloomingdales.com/registry/Grace-Bascon-Mark-Josephs/1345321"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-3 rounded-full bg-sepia px-7 py-3 text-xs uppercase tracking-eyebrow text-cream transition-transform duration-300 hover:scale-105"
@@ -674,7 +674,7 @@ const Registry = () => (
             <ExternalLink className="h-4 w-4" />
           </a>
           <a
-            href={REGISTRY_URL}
+            href="https://www.crateandbarrel.com/gift-registry/grace-bascon-and-mark-josephs/r7507079"
             target="_blank"
             rel="noreferrer"
             className="inline-flex items-center gap-3 rounded-full bg-sepia px-7 py-3 text-xs uppercase tracking-eyebrow text-cream transition-transform duration-300 hover:scale-105"
