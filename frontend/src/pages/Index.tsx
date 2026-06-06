@@ -16,12 +16,10 @@ import p1 from "@/assets/benchStanding improved.jpg";
 import p2 from "@/assets/bridgeLooking improved.JPG";
 import p4 from "@/assets/bridgeStanding.JPG";
 import p6 from "@/assets/ringChest.JPG";
+import churchImage from "@/assets/churchImage.png";
+import venueImage from "@/assets/venueImage improved.png";
 
 const WEDDING_DATE = new Date("2026-09-26T15:00:00");
-const CHURCH_IMAGE_URL =
-  "https://images.unsplash.com/photo-1704281657570-350a6ef6a0c1?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&w=1400";
-const VENUE_IMAGE_URL =
-  "https://images.unsplash.com/photo-1670529776180-60e4132ab90c?ixlib=rb-4.1.0&q=85&fm=jpg&crop=entropy&cs=srgb&w=1400";
 const REGISTRY_URL = "https://www.crateandbarrel.com/gift-registry/";
 
 /* ---------------- Reveal helper ---------------- */
@@ -582,14 +580,14 @@ const Venue = () => {
             {
               title: "Ceremony",
               label: "The Church",
-              image: CHURCH_IMAGE_URL,
+              image: churchImage,
               alt: "Church ceremony interior",
               from: -96,
             },
             {
               title: "Reception",
               label: "The Veranda",
-              image: VENUE_IMAGE_URL,
+              image: venueImage,
               alt: "Outdoor wedding venue courtyard",
               from: 96,
             },
