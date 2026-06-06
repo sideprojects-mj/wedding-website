@@ -660,9 +660,6 @@ const Registry = () => (
         <h2 className="mt-5 font-serif text-5xl lowercase leading-none text-sepia md:text-7xl">
           for our home
         </h2>
-        {/*<p className="mt-7 max-w-md font-serif text-xl italic leading-relaxed text-sepia/70 md:text-2xl">*/}
-        {/*  Your presence is the gift. For anyone who has asked, we are registered at Crate & Barrel.*/}
-        {/*</p>*/}
         <div className="mt-9 flex flex-col items-start gap-3">
           <a
             href="https://www.bloomingdales.com/registry/Grace-Bascon-Mark-Josephs/1345321"
@@ -842,6 +839,67 @@ const Travel = () => (
   </section>
 );
 
+
+/* ---------------- Airports ---------------- */
+const airportBlocks = [
+  {
+    name: "Austin-Bergstrom International",
+    code: "AUS",
+    distance: "About 55 minutes to New Braunfels",
+    location: "Austin, Texas",
+  },
+  {
+    name: "San Antonio International",
+    code: "SAT",
+    distance: "About 35 minutes to New Braunfels",
+    location: "San Antonio, Texas",
+  },
+];
+
+const Airports = () => (
+  <section id="airports" className="bg-background px-6 py-24 md:py-32">
+    <div className="mx-auto max-w-6xl">
+      <Reveal className="mx-auto max-w-3xl text-center">
+        <p className="text-xs uppercase tracking-eyebrow text-gold">airports</p>
+        <h2 className="mt-5 font-serif text-5xl lowercase leading-none text-sepia md:text-7xl">
+          flying in
+        </h2>
+        <p className="mx-auto mt-7 max-w-2xl font-serif text-xl italic leading-relaxed text-sepia/70 md:text-2xl">
+          New Braunfels sits between Austin and San Antonio, so either airport works.
+        </p>
+      </Reveal>
+
+      <div className="mt-14 grid gap-6 md:grid-cols-2">
+        {airportBlocks.map((airport, index) => (
+          <motion.article
+            key={airport.code}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.28 }}
+            transition={{ duration: 0.85, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
+            className="border border-sepia/10 bg-cream p-6 text-left shadow-[var(--shadow-soft)] md:p-8"
+          >
+            <p className="text-[10px] uppercase tracking-eyebrow text-gold">{airport.code}</p>
+            <h3 className="mt-4 font-serif text-3xl leading-tight text-sepia md:text-4xl">
+              {airport.name}
+            </h3>
+            <div className="mt-7 space-y-4 border-t border-sepia/10 pt-6">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-sepia/90">Drive</p>
+                <p className="mt-1 font-serif text-xl leading-snug text-sepia">{airport.distance}</p>
+              </div>
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-sepia/90">Location</p>
+                <p className="mt-1 font-serif text-xl leading-snug text-sepia">{airport.location}</p>
+              </div>
+            </div>
+          </motion.article>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 /* ---------------- FAQ ---------------- */
 const faqs = [
   { q: "How do I RSVP?", a: "RSVP will be available closer to the wedding — we'll send a note when it's ready." },
@@ -935,6 +993,7 @@ const Index = () => {
         <Venue />
         <Registry />
         <Travel />
+        <Airports />
         <FAQ />
         <Closing />
         <Footer />
