@@ -1,11 +1,19 @@
 package com.example.weddingSite;
 
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/rsvps")
@@ -47,6 +55,84 @@ public class RsvpController {
         rsvpRepository.save(firstGuest);
 
         return ResponseEntity.ok(toPartyDto(savedParty));
+    }
+
+
+    @PostMapping(value = "importCsv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CsvImportResult> importCsv(@RequestParam("file") MultipartFile file) throws IOException {
+        String csv = new String(file.getBytes(), StandardCharsets.UTF_8);
+        List<List<String>> rows = parseCsv(csv);
+        List<String> errors = new ArrayList<>();
+
+        if (rows.isEmpty()) {
+            return ResponseEntity.ok(new CsvImportResult(0, 0, 0, List.of("CSV file is empty.")));
+        }
+
+        Map<String, Integer> headers = headerMap(rows.get(0));
+        if (!headers.containsKey("partyname") || !headers.containsKey("guestname")) {
+            return ResponseEntity.ok(new CsvImportResult(
+                    0,
+                    0,
+                    0,
+                    List.of("CSV must include partyName and guestName columns.")
+            ));
+        }
+
+        int partiesCreated = 0;
+        int guestsCreated = 0;
+        int guestsUpdated = 0;
+
+        for (int rowIndex = 1; rowIndex < rows.size(); rowIndex += 1) {
+            List<String> row = rows.get(rowIndex);
+            if (isBlankRow(row)) {
+                continue;
+            }
+
+            String partyName = csvValue(row, headers, "partyname");
+            String guestName = csvValue(row, headers, "guestname");
+            String email = csvValue(row, headers, "email");
+            boolean invitedToRehearsalDinner = parseBoolean(csvValue(row, headers, "invitedtorehearsaldinner"));
+
+            if (partyName.isBlank() || guestName.isBlank()) {
+                errors.add("Row " + (rowIndex + 1) + ": partyName and guestName are required.");
+                continue;
+            }
+
+            RsvpParty party = partyRepository.findFirstByPartyNameIgnoreCase(partyName).orElse(null);
+            if (party == null) {
+                party = new RsvpParty();
+                party.setPartyName(partyName);
+                party = partyRepository.save(party);
+                partiesCreated += 1;
+            }
+
+            Rsvp rsvp = rsvpRepository.findFirstByGuestNameIgnoreCase(guestName).orElse(null);
+            boolean createdGuest = false;
+            if (rsvp == null) {
+                rsvp = new Rsvp();
+                rsvp.setGuestName(guestName);
+                rsvp.setAttending(false);
+                rsvp.setResponded(false);
+                createdGuest = true;
+            }
+
+            rsvp.setParty(party);
+            rsvp.setEmail(email.isBlank() ? null : email);
+            rsvp.setInvitedToRehearsalDinner(invitedToRehearsalDinner);
+            if (!invitedToRehearsalDinner) {
+                rsvp.setRehearsalDinnerAttending(null);
+                rsvp.setRehearsalDinnerResponded(false);
+            }
+            rsvpRepository.save(rsvp);
+
+            if (createdGuest) {
+                guestsCreated += 1;
+            } else {
+                guestsUpdated += 1;
+            }
+        }
+
+        return ResponseEntity.ok(new CsvImportResult(partiesCreated, guestsCreated, guestsUpdated, errors));
     }
 
     @GetMapping("getAll")
@@ -179,6 +265,73 @@ public class RsvpController {
         if (submitted) {
             rsvp.setSubmittedAt(LocalDateTime.now());
         }
+    }
+
+
+    private List<List<String>> parseCsv(String csv) {
+        List<List<String>> rows = new ArrayList<>();
+        List<String> row = new ArrayList<>();
+        StringBuilder value = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (int index = 0; index < csv.length(); index += 1) {
+            char current = csv.charAt(index);
+            if (current == '"') {
+                if (inQuotes && index + 1 < csv.length() && csv.charAt(index + 1) == '"') {
+                    value.append('"');
+                    index += 1;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (current == ',' && !inQuotes) {
+                row.add(value.toString().trim());
+                value.setLength(0);
+            } else if ((current == '\n' || current == '\r') && !inQuotes) {
+                if (current == '\r' && index + 1 < csv.length() && csv.charAt(index + 1) == '\n') {
+                    index += 1;
+                }
+                row.add(value.toString().trim());
+                rows.add(row);
+                row = new ArrayList<>();
+                value.setLength(0);
+            } else {
+                value.append(current);
+            }
+        }
+
+        if (value.length() > 0 || !row.isEmpty()) {
+            row.add(value.toString().trim());
+            rows.add(row);
+        }
+        return rows;
+    }
+    private Map<String, Integer> headerMap(List<String> headerRow) {
+        Map<String, Integer> headers = new HashMap<>();
+        for (int index = 0; index < headerRow.size(); index += 1) {
+            headers.put(normalizeHeader(headerRow.get(index)), index);
+        }
+        return headers;
+    }
+
+    private String normalizeHeader(String value) {
+        return value == null ? "" : value.trim().replace("_", "").replace(" ", "").toLowerCase(Locale.ROOT);
+    }
+
+    private String csvValue(List<String> row, Map<String, Integer> headers, String header) {
+        Integer index = headers.get(header);
+        if (index == null || index >= row.size()) {
+            return "";
+        }
+        return row.get(index).trim();
+    }
+
+    private boolean parseBoolean(String value) {
+        String normalized = value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+        return normalized.equals("true") || normalized.equals("yes") || normalized.equals("y") || normalized.equals("1");
+    }
+
+    private boolean isBlankRow(List<String> row) {
+        return row.stream().allMatch(value -> value == null || value.isBlank());
     }
 
     private PartyDto toPartyDto(RsvpParty party) {

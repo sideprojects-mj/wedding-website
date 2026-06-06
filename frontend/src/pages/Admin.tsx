@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Lock, Plus, RefreshCw, Trash2, UserPlus } from "lucide-react";
+import { ArrowLeft, FileUp, Lock, Plus, RefreshCw, Trash2, UserPlus } from "lucide-react";
 import { ADMIN_PASSCODE, API_BASE_URL } from "@/config";
 
 type MealChoice = "BEEF" | "CHICKEN" | "VEGETARIAN";
@@ -25,6 +25,13 @@ type RsvpParty = {
   id: number;
   partyName: string;
   guests: RsvpRecord[];
+};
+
+type CsvImportResult = {
+  partiesCreated: number;
+  guestsCreated: number;
+  guestsUpdated: number;
+  errors: string[];
 };
 
 const PASSCODE_STORAGE_KEY = "wedding-admin-unlocked";
@@ -60,6 +67,8 @@ const Admin = () => {
   const [memberName, setMemberName] = useState("");
   const [memberEmail, setMemberEmail] = useState("");
   const [memberRehearsalInvite, setMemberRehearsalInvite] = useState(false);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -185,6 +194,41 @@ const Admin = () => {
       setMessage("Could not add this party. The backend may be offline.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const importCsv = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!csvFile) {
+      setMessage("Choose a CSV file before importing.");
+      return;
+    }
+
+    setImporting(true);
+    setMessage("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", csvFile);
+
+      const response = await fetch(API_BASE_URL + "/api/rsvps/importCsv", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error("Failed to import CSV");
+
+      const result = (await response.json()) as CsvImportResult;
+      await fetchData();
+      setCsvFile(null);
+      const importedMessage = "Imported " + result.guestsCreated + " new guests, updated " + result.guestsUpdated + " guests, and created " + result.partiesCreated + " parties.";
+      const errorMessage = result.errors.length > 0 ? " " + result.errors.length + " row issue(s): " + result.errors.join(" ") : "";
+      setMessage(importedMessage + errorMessage);
+    } catch {
+      setMessage("Could not import this CSV. Check the file format and backend connection.");
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -388,6 +432,39 @@ const Admin = () => {
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="space-y-8">
+            <form onSubmit={importCsv} className="border border-sepia/10 bg-background p-5 md:p-7">
+              <h2 className="font-serif text-3xl text-sepia">Import CSV</h2>
+              <p className="mt-3 text-sm leading-relaxed text-sepia/60">
+                Upload one row per guest. Guests with the same party name will be grouped together.
+              </p>
+              <div className="mt-6 space-y-4">
+                <label className="block">
+                  <span className="text-xs uppercase tracking-eyebrow text-sepia/50">CSV file</span>
+                  <input
+                    type="file"
+                    accept=".csv,text/csv"
+                    onChange={(event) => setCsvFile(event.target.files?.[0] ?? null)}
+                    className="mt-2 w-full border border-sepia/15 bg-cream px-4 py-3 text-sm text-sepia file:mr-4 file:border-0 file:bg-sepia file:px-4 file:py-2 file:text-xs file:uppercase file:tracking-[0.16em] file:text-cream"
+                  />
+                </label>
+                <a
+                  href="/sample-rsvp-import.csv"
+                  download
+                  className="inline-flex text-xs uppercase tracking-eyebrow text-sepia/65 underline-offset-4 transition-colors hover:text-gold hover:underline"
+                >
+                  Download sample CSV
+                </a>
+              </div>
+              <button
+                type="submit"
+                disabled={importing}
+                className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 bg-sepia px-5 text-xs uppercase tracking-eyebrow text-cream transition-colors hover:bg-gold disabled:opacity-60"
+              >
+                <FileUp className="h-4 w-4" />
+                {importing ? "Importing" : "Import CSV"}
+              </button>
+            </form>
+
             <form onSubmit={createParty} className="border border-sepia/10 bg-background p-5 md:p-7">
               <h2 className="font-serif text-3xl text-sepia">Add party</h2>
               <div className="mt-6 space-y-4">
