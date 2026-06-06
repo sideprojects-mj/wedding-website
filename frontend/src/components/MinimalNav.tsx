@@ -19,7 +19,7 @@ const MinimalNav = () => {
       className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
         solid
           ? "w-[min(86vw,640px)] bg-cream/90 backdrop-blur-md shadow-[0_8px_30px_-10px_hsl(25_25%_18%/0.15)]"
-          : "w-[min(96vw,1100px)] bg-cream/20 backdrop-blur-sm"
+          : "w-[min(96vw,1100px)] bg-cream/90 backdrop-blur-md shadow-[0_8px_30px_-10px_hsl(25_25%_18%/0.15)]"
       } rounded-full`}
     >
       <nav className="flex items-center justify-between px-6 md:px-8 h-12">
