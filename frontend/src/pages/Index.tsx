@@ -11,7 +11,7 @@ import MinimalNav from "@/components/MinimalNav";
 import SmoothScroll from "@/components/SmoothScroll";
 
 import crest from "@/assets/wedding-crest.png";
-import heroImg from "@/assets/couple-hero.jpg";
+import hero2 from "@/assets/hero2.JPG";
 import p1 from "@/assets/IMG_0420.JPG";
 import p2 from "@/assets/collage-2.jpg";
 import p3 from "@/assets/collage-3.jpg";
@@ -186,8 +186,8 @@ const Hero = () => {
             className="relative overflow-hidden bg-sepia origin-center will-change-transform"
           >
             <img
-              src={p3}
-              alt="Mark and Grace by the water"
+              src={hero2}
+              alt="Mark and Grace"
               className="absolute inset-0 w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-sepia/20" />
@@ -787,7 +787,7 @@ const FAQ = () => (
 const Closing = () => (
   <section className="relative h-screen w-full overflow-hidden bg-cream">
     <img
-      src={heroImg}
+      src={hero2}
       alt="Mark and Grace"
       className="absolute inset-0 w-full h-full object-cover grayscale"
     />
