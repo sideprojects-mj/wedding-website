@@ -851,7 +851,7 @@ const airportBlocks = [
   {
     name: "San Antonio International",
     code: "SAT",
-    distance: "About 35 minutes to New Braunfels",
+    distance: "About 40 minutes to New Braunfels",
     location: "San Antonio, Texas",
   },
 ];
