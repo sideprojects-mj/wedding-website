@@ -11,7 +11,7 @@ import MinimalNav from "@/components/MinimalNav";
 import SmoothScroll from "@/components/SmoothScroll";
 
 import crest from "@/assets/wedding-crest.png";
-import hero2 from "@/assets/hero2.JPG";
+import hero2 from "@/assets/hero2 copimproved.jpg";
 import p1 from "@/assets/benchStanding.JPG";
 import p2 from "@/assets/bridgeLooking.JPG";
 import p4 from "@/assets/bridgeStanding.JPG";
