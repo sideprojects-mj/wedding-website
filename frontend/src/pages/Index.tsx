@@ -698,9 +698,9 @@ const Registry = () => (
             <span className="h-2.5 w-2.5 rounded-full bg-sepia/20" />
             <span className="h-2.5 w-2.5 rounded-full bg-sepia/15" />
           </div>
-          <p className="text-[10px] uppercase tracking-[0.24em] text-sepia/55">
-            crate &amp; barrel
-          </p>
+          {/*<p className="text-[10px] uppercase tracking-[0.24em] text-sepia/55">*/}
+          {/*  crate &amp; barrel*/}
+          {/*</p>*/}
         </div>
 
         <div className="p-5 md:p-7">
