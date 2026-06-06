@@ -19,7 +19,7 @@ import p6 from "@/assets/ringChest.JPG";
 import churchImage from "@/assets/churchImage.png";
 import venueImage from "@/assets/venueImage improved.png";
 
-const WEDDING_DATE = new Date("2026-09-26T15:00:00");
+const WEDDING_DATE = new Date("2026-09-26T16:30:00");
 const REGISTRY_URL = "https://www.crateandbarrel.com/gift-registry/";
 
 /* ---------------- Reveal helper ---------------- */
@@ -583,13 +583,17 @@ const Venue = () => {
               image: churchImage,
               alt: "Church ceremony interior",
               from: -96,
+              mapUrl:
+                "https://www.google.com/maps/place/Saints+Peter+and+Paul+Catholic+Church/@29.7036657,-98.130954,17z/data=!3m1!4b1!4m6!3m5!1s0x865cbd5dd764fa1b:0x265f59428d234969!8m2!3d29.7036657!4d-98.1283791!16s%2Fg%2F1hf30w23q?entry=ttu&g_ep=EgoyMDI2MDYwMS4wIKXMDSoASAFQAw%3D%3D",
             },
             {
               title: "Reception",
-              label: "The Veranda",
+              label: "The Gardens of Cranesbury View",
               image: venueImage,
               alt: "Outdoor wedding venue courtyard",
               from: 96,
+              mapUrl:
+                "https://www.google.com/maps/place/The+Gardens+of+Cranesbury+View/@29.7803159,-98.2784274,17z/data=!3m1!4b1!4m6!3m5!1s0x865c9b0d875d757d:0x4d85e746cb693e83!8m2!3d29.7803159!4d-98.2758525!16s%2Fg%2F1tdfz467?entry=ttu&g_ep=EgoyMDI2MDYwMS4wIKXMDSoASAFQAw%3D%3D",
             },
           ].map((place, index) => (
             <motion.figure
@@ -607,7 +611,7 @@ const Venue = () => {
                 <p className="text-xs uppercase tracking-eyebrow text-gold">{place.title}</p>
                 <h4 className="mt-2 font-serif text-3xl text-sepia md:text-4xl">{place.label}</h4>
                 <a
-                  href="https://maps.google.com/?q=New+Braunfels+Texas"
+                  href={place.mapUrl}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-3 inline-flex items-center gap-2 text-sm uppercase tracking-eyebrow text-sepia/70 transition-colors hover:text-gold"
