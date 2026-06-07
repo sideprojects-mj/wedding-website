@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 const menuItems = [
   { label: "Schedule", href: "#schedule", eyebrow: "01" },
   { label: "Hotels Accommodations", href: "#travel", eyebrow: "02" },
-  { label: "Travel", href: "#airports", eyebrow: "03" },
+  { label: "Airports", href: "#airports", eyebrow: "03" },
   { label: "Registry", href: "#registry", eyebrow: "04" },
   { label: "Wedding Party", href: "#wedding-party", eyebrow: "05" },
   { label: "FAQ", href: "#faq", eyebrow: "06" },

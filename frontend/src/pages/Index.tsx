@@ -580,8 +580,8 @@ const Venue = () => {
         <div className="mt-8 grid gap-8 md:mt-12 md:grid-cols-2 md:gap-8">
           {[
             {
-              title: "Ceremony",
-              label: "The Church",
+              title: "Mass",
+              label: "Sts. Peter & Paul Catholic Church",
               image: churchImage,
               alt: "Church ceremony interior",
               from: -96,
@@ -859,8 +859,8 @@ const hotelBlocks = [
     deadline: "Please book by August 11, 2026",
     address1: "10 minute drive from the Church",
     address2: "18 minute drive from the Venue",
-    note: "We will add the booking link and group code here once the hotel block is finalized.",
-    bookingUrl: "#",
+    note: "We recommend active adults or parents with children book here. Checkout their ammenities on the website. This hotel is quintessentially New Braunfels.",
+    bookingUrl: "https://hotels.cloudbeds.com/en/reservation/ggRyKI/?allotment_block_code=b580004&currency=usd&checkin=2026-09-25&checkout=2026-09-27",
   },
   {
     name: "Petit Cowboy",
@@ -868,7 +868,7 @@ const hotelBlocks = [
     deadline: "Please book by August 11, 2026",
     address1: "8 minute drive from the Church",
     address2: "19 minute drive the from the Venue",
-    note: "This card can be replaced with the second hotel block details.",
+    note: "Coming Soon",
     bookingUrl: "#",
   },
   {
@@ -877,18 +877,18 @@ const hotelBlocks = [
     deadline: "Please book by August 11, 2026",
     address1: "8 minute drive from the Church",
     address2: "19 minute drive the from the Venue",
-    note: "This card can be replaced with the second hotel block details.",
-    bookingUrl: "#",
+    bookingUrl: "https://www.marriott.com/event-reservations/reservation-link.mi?id=1779807943464&key=GRP&app=resvlink",
+    note: "We recommend the Courtyard by Marriott New Braunfels for its convenient location, comfortable accommodations, and trusted service.",
   },
 ];
 
-const Travel = () => (
+const Hotel = () => (
   <section id="travel" className="bg-cream px-6 py-16 md:py-36">
     <div className="mx-auto max-w-6xl">
       <Reveal className="mx-auto max-w-3xl text-center">
-        <p className="text-xs uppercase tracking-eyebrow text-gold">travel</p>
+        <p className="text-xs uppercase tracking-eyebrow text-gold">hotels</p>
         <h2 className="mt-5 font-serif text-5xl lowercase leading-none text-sepia md:text-7xl">
-          travel accomodations
+          hotel accomodations
         </h2>
         <p className="mx-auto mt-7 max-w-2xl font-serif text-xl italic leading-relaxed text-sepia/70 md:text-2xl">
           We have reserved room blocks nearby for anyone traveling in for the weekend.
@@ -903,7 +903,7 @@ const Travel = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.28 }}
             transition={{ duration: 0.85, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-            className="border border-sepia/10 bg-background p-5 text-left shadow-[var(--shadow-soft)] md:p-6"
+            className="flex h-full flex-col border border-sepia/10 bg-background p-5 text-left shadow-[var(--shadow-soft)] md:p-6"
           >
             <p className="text-[10px] uppercase tracking-eyebrow text-gold">room block</p>
             <h3 className="mt-4 font-serif text-3xl leading-tight text-sepia">
@@ -924,17 +924,22 @@ const Travel = () => (
                 <p className="mt-1 font-serif text-lg leading-snug text-sepia">{hotel.address2}</p>
               </div>
             </div>
-            <p className="mt-5 text-sm leading-relaxed text-sepia/65">{hotel.note}</p>
-            <a
-              href={hotel.bookingUrl}
-              className="mt-6 inline-flex items-center gap-2 text-xs uppercase tracking-eyebrow text-sepia transition-colors hover:text-gold"
-              aria-disabled={hotel.bookingUrl === "#"}
-              onClick={(event) => {
-                if (hotel.bookingUrl === "#") event.preventDefault();
-              }}
-            >
-              Booking details
-            </a>
+            <div className="mt-auto min-h-[4.75rem] pt-5">
+              {hotel.note && (
+                <p className="text-sm leading-relaxed text-sepia/65">{hotel.note}</p>
+              )}
+              {hotel.bookingUrl !== "#" && (
+                <a
+                  href={hotel.bookingUrl}
+                  className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-eyebrow text-sepia transition-colors hover:text-gold"
+                >
+                  Booking details
+                </a>
+              )}
+              {hotel.details && (
+                <p className="mt-3 text-sm leading-relaxed text-sepia/65">{hotel.details}</p>
+              )}
+            </div>
           </motion.article>
         ))}
       </div>
@@ -1057,7 +1062,7 @@ const FAQ = () => (
       <p className="mt-6 text-sm text-sepia/60">
         Can't find the answer here?{" "}
         <a
-          href="mailto:hello@markandgrace.com"
+          href="mailto:thejosephswedding26@gmail.com"
           className="underline underline-offset-4 hover:text-gold transition-colors"
         >
           Reach out to Mark or Grace
@@ -1096,10 +1101,20 @@ const Closing = () => (
     />
     <div className="absolute inset-0 bg-sepia/45" />
     <Reveal className="absolute inset-0 flex items-center justify-center px-6 text-center">
-      <p className="font-serif italic text-3xl md:text-6xl lg:text-7xl text-cream leading-tight max-w-4xl">
-        you're my <span className="text-gold">favorite</span> person <br />
-        to do anything with <br />
-        for the rest of my life.
+      <p className="font-serif italic text-3xl md:text-6xl lg:text-6xl text-cream leading-tight max-w-4xl">
+        Thank You! <br/>
+        We are so excited to get everyone we love together to celebrate our union and we hope to see you there.
+      </p>
+    </Reveal>
+  </section>
+);
+
+const PrayerNote = () => (
+  <section className="bg-cream px-6 py-12 text-center md:py-16">
+    <Reveal className="mx-auto max-w-3xl">
+      <p className="text-[10px] uppercase tracking-eyebrow text-gold">prayer request</p>
+      <p className="mt-5 font-serif text-xl italic leading-relaxed text-sepia/75 md:text-2xl">
+        If you are interested in praying for us, we ask you to pray to the patron saints of our marriage: Mary, St. Joseph, Sts. Louis Martin and Marie-Azelie Guerin, parents of St. Therese of Lisieux.
       </p>
     </Reveal>
   </section>
@@ -1129,12 +1144,13 @@ const Index = () => {
         <Schedule />
         
         <Venue />
-        <Travel />
+        <Hotel />
         <Airports />
         <Registry />
         <WeddingParty />
         <FAQ />
         <Closing />
+        <PrayerNote />
         <Footer />
       </main>
     </SmoothScroll>
