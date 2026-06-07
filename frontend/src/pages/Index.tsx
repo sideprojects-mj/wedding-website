@@ -447,7 +447,7 @@ const ScheduleConfetti = ({ triggerRef }: { triggerRef: React.RefObject<HTMLElem
 
 const Schedule = () => {
   return (
-    <section className="relative overflow-hidden bg-cream px-6 pb-12 pt-32 md:pb-16 md:pt-48">
+    <section className="relative overflow-hidden bg-cream px-6 pb-8 pt-20 md:pb-16 md:pt-48">
       <div className="relative z-30 mx-auto max-w-5xl">
         <Reveal className="text-center">
           <p className="font-serif text-3xl uppercase tracking-[0.28em] text-sepia md:text-4xl">
@@ -458,7 +458,7 @@ const Schedule = () => {
           </p>
         </Reveal>
 
-        <div className="relative mx-auto mt-16 w-fit max-w-full pl-10 pr-4 md:mt-20 md:pl-14 md:pr-10">
+        <div className="relative mx-auto mt-10 w-fit max-w-full pl-10 pr-4 md:mt-20 md:pl-14 md:pr-10">
           <motion.div
             initial={{ scaleY: 0 }}
             whileInView={{ scaleY: 1 }}
@@ -472,7 +472,7 @@ const Schedule = () => {
               className="relative"
             >
               <Reveal delay={0.12 * index}>
-                <div className="relative py-10 md:py-12">
+                <div className="relative py-8 md:py-12">
                   <motion.span
                     initial={{ opacity: 0, scale: 0.4 }}
                     whileInView={{ opacity: 1, scale: 1 }}
@@ -542,7 +542,7 @@ const Venue = () => {
   return (
     <section
       id="rsvp"
-      className="relative overflow-hidden bg-cream px-6 pb-32 pt-12 text-center md:pt-16"
+      className="relative overflow-hidden bg-cream px-6 pb-20 pt-10 text-center md:pb-32 md:pt-16"
     >
       <ScheduleConfetti triggerRef={countdownNumbersRef} />
 
@@ -555,7 +555,7 @@ const Venue = () => {
         </Reveal>
 
         <div ref={countdownNumbersRef}>
-          <Reveal delay={0.1} className="relative z-30 mt-14 flex justify-center items-center gap-3 md:gap-8">
+          <Reveal delay={0.1} className="relative z-30 mt-10 flex justify-center items-center gap-3 md:mt-14 md:gap-8">
             {blocks.map((b, i) => (
               <div key={b.label} className="flex items-center gap-3 md:gap-8">
                 <div className="text-center min-w-[60px] md:min-w-[90px]">
@@ -573,9 +573,9 @@ const Venue = () => {
         </div>
       </div>
 
-      <Reveal delay={0.2} className="relative z-30 mt-24 mx-auto max-w-6xl">
+      <Reveal delay={0.2} className="relative z-30 mt-14 mx-auto max-w-6xl md:mt-24">
         <p className="font-serif text-3xl text-sepia md:text-5xl">the places</p>
-        <div className="mt-12 grid gap-10 md:grid-cols-2 md:gap-8">
+        <div className="mt-8 grid gap-8 md:mt-12 md:grid-cols-2 md:gap-8">
           {[
             {
               title: "Ceremony",
@@ -653,7 +653,7 @@ const registryItems = [
 ];
 
 const Registry = () => (
-  <section className="bg-cream px-6 pb-28 pt-12 md:pb-36 md:pt-16">
+  <section className="bg-cream px-6 pb-16 pt-8 md:pb-36 md:pt-16">
     <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-[0.85fr_1.15fr] md:gap-16">
       <Reveal className="text-left">
         <p className="text-xs uppercase tracking-eyebrow text-gold">registry</p>
@@ -779,14 +779,14 @@ const WeddingParty = () => {
   }));
 
   return (
-    <section className="bg-background px-4 py-20 md:px-8 md:py-28">
+    <section className="bg-background px-4 py-14 md:px-8 md:py-28">
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-          className="relative bg-cream/40 px-5 py-14 text-center shadow-[0_28px_80px_-60px_hsl(var(--sepia)/0.5)] md:px-12 md:py-20"
+          className="relative bg-cream/40 px-5 py-10 text-center shadow-[0_28px_80px_-60px_hsl(var(--sepia)/0.5)] md:px-12 md:py-20"
         >
           <div className="pointer-events-none absolute inset-4 border border-sepia/25" />
           <div className="pointer-events-none absolute inset-6 border border-sepia/15" />
@@ -798,9 +798,9 @@ const WeddingParty = () => {
             </h2>
           </div>
 
-          <div className="relative mx-auto mt-16 max-w-5xl md:mt-20">
+          <div className="relative mx-auto mt-10 max-w-5xl md:mt-20">
             <div className="pointer-events-none absolute bottom-0 left-1/2 top-0 hidden w-px -translate-x-1/2 bg-sepia/20 md:block" />
-            <div className="space-y-12 md:space-y-14">
+            <div className="space-y-8 md:space-y-14">
               {rows.map((row, index) => (
                 <motion.div
                   key={index}
@@ -808,7 +808,7 @@ const WeddingParty = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.55 }}
                   transition={{ duration: 0.8, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
-                  className="grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] md:gap-14"
+                  className="grid grid-cols-2 items-center gap-3 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:gap-14"
                 >
                   <WeddingPartyPerson person={row.bridal} align="" />
                   <div className="mx-auto hidden h-16 w-px bg-sepia/25 md:block" />
@@ -829,20 +829,25 @@ const WeddingPartyPerson = ({
 }: {
   person?: { name: string; relation: string };
   align: string;
-}) => (
-  <div className={`min-h-[5.25rem] text-center ${align}`}>
-    {person && (
-      <>
-        <p className="whitespace-nowrap font-serif text-[clamp(1.55rem,4.6vw,2.25rem)] leading-none tracking-[0.03em] text-sepia md:text-[clamp(1.7rem,2.65vw,2.65rem)]">
-          {person.name}
-        </p>
-        <p className="mt-3 font-serif text-xl leading-none text-sepia/75 md:text-2xl">
-          {person.relation}
-        </p>
-      </>
-    )}
-  </div>
-);
+}) => {
+  if (!person) return <div className={`min-h-[4.5rem] min-w-0 text-center md:min-h-[5.25rem] ${align}`} />;
+
+  const nameParts = person.name.split(" ");
+  const firstLine = nameParts.slice(0, -1).join(" ");
+  const lastLine = nameParts[nameParts.length - 1];
+
+  return (
+    <div className={`min-h-[4.5rem] min-w-0 text-center md:min-h-[5.25rem] ${align}`}>
+      <p className="font-serif text-[clamp(1.3rem,5vw,1.85rem)] leading-[0.95] tracking-[0.01em] text-sepia md:whitespace-nowrap md:text-[clamp(1.7rem,2.65vw,2.65rem)] md:leading-none md:tracking-[0.03em]">
+        <span className="block md:inline">{firstLine}</span>
+        <span className="block md:inline">{lastLine}</span>
+      </p>
+      <p className="mt-2 font-serif text-base leading-tight text-sepia/75 md:mt-3 md:text-2xl md:leading-none">
+        {person.relation}
+      </p>
+    </div>
+  );
+};
 /* ---------------- Travel ---------------- */
 const hotelBlocks = [
   {
@@ -875,7 +880,7 @@ const hotelBlocks = [
 ];
 
 const Travel = () => (
-  <section id="travel" className="bg-cream px-6 py-28 md:py-36">
+  <section id="travel" className="bg-cream px-6 py-16 md:py-36">
     <div className="mx-auto max-w-6xl">
       <Reveal className="mx-auto max-w-3xl text-center">
         <p className="text-xs uppercase tracking-eyebrow text-gold">travel</p>
@@ -952,7 +957,7 @@ const airportBlocks = [
 ];
 
 const Airports = () => (
-  <section id="airports" className="bg-background px-6 py-24 md:py-32">
+  <section id="airports" className="bg-background px-6 py-16 md:py-32">
     <div className="mx-auto max-w-6xl">
       <Reveal className="mx-auto max-w-3xl text-center">
         <p className="text-xs uppercase tracking-eyebrow text-gold">airports</p>
@@ -1005,7 +1010,7 @@ const faqs = [
 ];
 
 const FAQ = () => (
-  <section id="faq" className="py-32 px-6 bg-background">
+  <section id="faq" className="px-6 py-20 bg-background md:py-32">
     <Reveal className="text-center mb-12">
       <p className="text-xs uppercase tracking-eyebrow text-gold mb-4">just in case</p>
       <h2 className="font-serif text-5xl md:text-7xl text-sepia lowercase">
@@ -1064,7 +1069,7 @@ const Closing = () => (
 
 /* ---------------- Footer ---------------- */
 const Footer = () => (
-  <footer className="py-20 text-center bg-cream">
+  <footer className="py-14 text-center bg-cream md:py-20">
     <img src={crest} alt="" className="w-24 mx-auto opacity-70 mb-6" />
     <p className="text-[10px] uppercase tracking-eyebrow text-sepia/50">
       — mark &amp; grace · 09 · 26 · 26 —
