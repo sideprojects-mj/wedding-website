@@ -45,8 +45,13 @@ const MinimalNav = () => {
     };
   }, []);
 
+  const suppressCountdownConfetti = () => {
+    window.sessionStorage.setItem("suppress-countdown-confetti-until", String(Date.now() + 2200));
+  };
+
   const navigateHome = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
+    suppressCountdownConfetti();
     setOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -106,7 +111,10 @@ const MinimalNav = () => {
                 <a
                   key={item.label}
                   href={item.href}
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    suppressCountdownConfetti();
+                    setOpen(false);
+                  }}
                   className="group flex items-center justify-between rounded-2xl px-4 py-3 transition-all duration-300 hover:bg-background hover:shadow-[inset_0_0_0_1px_hsl(var(--sepia)/0.08)]"
                   style={{ transitionDelay: open ? index * 18 + "ms" : "0ms" }}
                 >

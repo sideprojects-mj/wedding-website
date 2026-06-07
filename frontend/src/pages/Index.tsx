@@ -414,6 +414,8 @@ const ScheduleConfetti = ({ triggerRef }: { triggerRef: React.RefObject<HTMLElem
 
     const maybePop = () => {
       if (hasBurstRef.current) return;
+      const suppressUntil = Number(window.sessionStorage.getItem("suppress-countdown-confetti-until") || 0);
+      if (suppressUntil > Date.now()) return;
       const rect = trigger.getBoundingClientRect();
       const triggerCenter = rect.top + rect.height / 2;
       if (triggerCenter <= height * 0.52 && triggerCenter >= height * 0.12) {
