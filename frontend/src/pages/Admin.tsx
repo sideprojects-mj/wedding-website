@@ -374,8 +374,8 @@ const Admin = () => {
   }
 
   return (
-    <main className="min-h-screen bg-cream px-6 py-10 text-sepia">
-      <div className="mx-auto flex max-w-6xl items-center justify-between">
+    <main className="min-h-screen bg-cream px-6 py-10 text-sepia lg:px-10 xl:px-14">
+      <div className="mx-auto flex w-full max-w-[1500px] items-center justify-between">
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-xs uppercase tracking-eyebrow text-sepia/65 transition-colors hover:text-gold"
@@ -396,7 +396,7 @@ const Admin = () => {
         </button>
       </div>
 
-      <section className="mx-auto max-w-6xl py-12">
+      <section className="mx-auto w-full max-w-[1500px] py-12">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
             <p className="text-xs uppercase tracking-eyebrow text-gold">admin</p>
@@ -430,8 +430,8 @@ const Admin = () => {
           ))}
         </div>
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="space-y-8">
+        <div className="mt-10 grid w-full items-start gap-8 xl:grid-cols-[minmax(360px,0.85fr)_minmax(0,1.65fr)] 2xl:grid-cols-[minmax(420px,0.8fr)_minmax(0,1.8fr)]">
+          <div className="w-full min-w-0 space-y-8 xl:min-w-[360px] 2xl:min-w-[420px]">
             <form onSubmit={importCsv} className="border border-sepia/10 bg-background p-5 md:p-7">
               <h2 className="font-serif text-3xl text-sepia">Import CSV</h2>
               <p className="mt-3 text-sm leading-relaxed text-sepia/60">
@@ -579,7 +579,7 @@ const Admin = () => {
             </form>
           </div>
 
-          <div className="border border-sepia/10 bg-background">
+          <div className="min-w-0 border border-sepia/10 bg-background">
             <div className="flex items-center justify-between border-b border-sepia/10 p-5">
               <h2 className="font-serif text-3xl text-sepia">Current RSVPs</h2>
               <p className="text-xs uppercase tracking-eyebrow text-sepia/45">
@@ -593,7 +593,7 @@ const Admin = () => {
                   {loading ? "Loading RSVPs..." : "No RSVPs yet."}
                 </p>
               ) : (
-                <table className="w-full min-w-[980px] border-collapse text-left">
+                <table className="w-full min-w-[840px] border-collapse text-left">
                   <thead className="sticky top-0 bg-cream">
                     <tr className="border-b border-sepia/10 text-xs uppercase tracking-[0.18em] text-sepia/45">
                       <th className="px-5 py-4 font-normal">Name</th>
