@@ -755,8 +755,8 @@ const groomsmen = [
   { name: "Jack Josephs", relation: "Best Man" },
   { name: "Sharbel Habchy", relation: "Best Man" },
   { name: "Chris Josephs", relation: "Groomsman" },
-  { name: "Patrick Josephs", relation: "Groomsman" },
   { name: "Michael Josephs", relation: "Groomsman" },
+  { name: "Patrick Josephs", relation: "Groomsman" },
   { name: "Franciso Rios", relation: "Groomsman" },
   { name: "Nate Dorsey", relation: "Groomsman" },
   { name: "Andrew Kelly", relation: "Groomsman" },
@@ -766,11 +766,11 @@ const bridalParty = [
   { name: "Lucy Safranek", relation: "Maid of Honor" },
   { name: "Miriam Skinner", relation: "Maid of Honor" },
   { name: "Noemi Hernandez", relation: "Bridesmaid" },
+  { name: "Olivia Mihaliak", relation: "Bridesmaid" },
   { name: "Daisy Trujillo", relation: "Bridesmaid" },
-  { name: "Olivia Flores", relation: "Bridesmaid" },
-  { name: "Caroline Dodson", relation: "Bridesmaid" },
   { name: "Sam Ketter", relation: "Bridesmaid" },
   { name: "Abigail Doyle", relation: "Bridesmaid" },
+  { name: "Caroline Dodson", relation: "Bridesmaid" },
 ];
 
 const WeddingParty = () => {
@@ -842,6 +842,7 @@ const WeddingPartyPerson = ({
     <div className={`min-h-[4.5rem] min-w-0 text-center md:min-h-[5.25rem] ${align}`}>
       <p className="font-serif text-[clamp(1.3rem,5vw,1.85rem)] leading-[0.95] tracking-[0.01em] text-sepia md:whitespace-nowrap md:text-[clamp(1.7rem,2.65vw,2.65rem)] md:leading-none md:tracking-[0.03em]">
         <span className="block md:inline">{firstLine}</span>
+        <span className="hidden md:inline"> </span>
         <span className="block md:inline">{lastLine}</span>
       </p>
       <p className="mt-2 font-serif text-base leading-tight text-sepia/75 md:mt-3 md:text-2xl md:leading-none">
@@ -1004,11 +1005,46 @@ const Airports = () => (
 
 /* ---------------- FAQ ---------------- */
 const faqs = [
-  { q: "How do I RSVP?", a: "RSVP will be available closer to the wedding — we'll send a note when it's ready." },
-  { q: "Is the wedding outdoors?", a: "The ceremony will be outdoors weather permitting; the reception is under cover." },
-  { q: "What should I wear?", a: "Cocktail attire. Think garden-party elegant — soft colors, comfortable shoes for grass." },
-  { q: "What's the weather like in late September?", a: "Texas hill country in late September is warm in the day (mid-80s°F) and cools off in the evening — bring a light layer." },
-  { q: "Help! I have other questions!", a: "Reach out to Mark or Grace directly anytime — we'd love to hear from you." },
+  {
+    q: "What time should I arrive at the church?",
+    a: "The Mass begins promptly at 3:30 p.m. We kindly ask that you arrive 15 minutes before the Mass to allow yourself plenty of time to find your seat comfortably.",
+  },
+  {
+    q: "Is there a dress code?",
+    a: `We kindly ask our guests to wear black-tie optional, with a preference for colorful gowns for the women. While gowns and tuxedos are preferred, formal dresses and suits with ties are also welcome.
+
+Ladies, we warmly invite you to embrace vibrant, colorful attire. We welcome all patterns, textures, and summer hues. Kindly avoid black to reflect the joyful spirit of the occasion.
+
+If you follow Filipino tradition, we invite you to wear a barong.`,
+  },
+  {
+    q: "When should I RSVP by?",
+    a: "Please RSVP by August 22nd.",
+  },
+  {
+    q: "How far is the reception venue from the church?",
+    a: "The venue is an 18-minute drive from the church. New Braunfels is small!",
+  },
+  {
+    q: "Can I take photos during the Mass?",
+    a: "We have hired an amazing photographer whom we trust completely to capture the beauty and glory of the Mass. We kindly ask that you refrain from taking photos until the reception. If you're curious, Isabella Macias is our photographer.",
+  },
+  {
+    q: "Can I bring a guest?",
+    a: "Anyone is welcome to attend the Mass. However, due to limited seating at the reception, we are only able to accommodate guests listed on your invitation.",
+  },
+  {
+    q: "Will the reception be outside?",
+    a: "The ceremony and reception will be held indoors. Cocktail hour will take place outdoors under an awning. The venue is beautiful and we invite guests to explore the small gardens, which were inspired by those at Versailles.",
+  },
+  {
+    q: "What's the weather like in late September?",
+    a: "The Texas Hill Country in late September is typically in the low 90s during the day and the high 70s in the evenings.",
+  },
+  {
+    q: "When will the reception end?",
+    a: "The reception will conclude at 12 a.m.",
+  },
 ];
 
 const FAQ = () => (
@@ -1036,7 +1072,7 @@ const FAQ = () => (
             <AccordionTrigger className="font-serif text-xl md:text-2xl text-sepia text-left hover:no-underline hover:text-gold py-6">
               {f.q}
             </AccordionTrigger>
-            <AccordionContent className="text-sepia/75 leading-relaxed text-base">
+            <AccordionContent className="whitespace-pre-line text-sepia/75 leading-relaxed text-base">
               {f.a}
             </AccordionContent>
           </AccordionItem>
