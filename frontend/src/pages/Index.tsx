@@ -447,7 +447,7 @@ const ScheduleConfetti = ({ triggerRef }: { triggerRef: React.RefObject<HTMLElem
 
 const Schedule = () => {
   return (
-    <section className="relative overflow-hidden bg-cream px-6 pb-8 pt-20 md:pb-16 md:pt-48">
+    <section id="schedule" className="relative overflow-hidden bg-cream px-6 pb-8 pt-20 md:pb-16 md:pt-48">
       <div className="relative z-30 mx-auto max-w-5xl">
         <Reveal className="text-center">
           <p className="font-serif text-3xl uppercase tracking-[0.28em] text-sepia md:text-4xl">
@@ -653,7 +653,7 @@ const registryItems = [
 ];
 
 const Registry = () => (
-  <section className="bg-cream px-6 pb-16 pt-8 md:pb-36 md:pt-16">
+  <section id="registry" className="bg-cream px-6 pb-16 pt-8 md:pb-36 md:pt-16">
     <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-[0.85fr_1.15fr] md:gap-16">
       <Reveal className="text-left">
         <p className="text-xs uppercase tracking-eyebrow text-gold">registry</p>
@@ -779,7 +779,7 @@ const WeddingParty = () => {
   }));
 
   return (
-    <section className="bg-background px-4 py-14 md:px-8 md:py-28">
+    <section id="wedding-party" className="bg-background px-4 py-14 md:px-8 md:py-28">
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
