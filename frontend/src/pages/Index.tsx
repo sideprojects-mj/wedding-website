@@ -748,6 +748,101 @@ const Registry = () => (
 );
 
 
+/* ---------------- Wedding Party ---------------- */
+const groomsmen = [
+  { name: "Jack Josephs", relation: "Best Man" },
+  { name: "Sharbel Habchy", relation: "Best Man" },
+  { name: "Chris Josephs", relation: "Groomsman" },
+  { name: "Patrick Josephs", relation: "Groomsman" },
+  { name: "Michael Josephs", relation: "Groomsman" },
+  { name: "Franciso Rios", relation: "Groomsman" },
+  { name: "Nate Dorsey", relation: "Groomsman" },
+  { name: "Andrew Kelly", relation: "Groomsman" },
+];
+
+const bridalParty = [
+  { name: "Lucy Safranek", relation: "Maid of Honor" },
+  { name: "Miriam Skinner", relation: "Maid of Honor" },
+  { name: "Noemi Hernandez", relation: "Bridesmaid" },
+  { name: "Daisy Trujillo", relation: "Bridesmaid" },
+  { name: "Olivia Flores", relation: "Bridesmaid" },
+  { name: "Caroline Dodson", relation: "Bridesmaid" },
+  { name: "Sam Ketter", relation: "Bridesmaid" },
+  { name: "Abigail Doyle", relation: "Bridesmaid" },
+];
+
+const WeddingParty = () => {
+  const maxRows = Math.max(bridalParty.length, groomsmen.length);
+  const rows = Array.from({ length: maxRows }, (_, index) => ({
+    bridal: bridalParty[index],
+    groom: groomsmen[index],
+  }));
+
+  return (
+    <section className="bg-background px-4 py-20 md:px-8 md:py-28">
+      <div className="mx-auto max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          className="relative bg-cream/40 px-5 py-14 text-center shadow-[0_28px_80px_-60px_hsl(var(--sepia)/0.5)] md:px-12 md:py-20"
+        >
+          <div className="pointer-events-none absolute inset-4 border border-sepia/25" />
+          <div className="pointer-events-none absolute inset-6 border border-sepia/15" />
+
+          <div className="relative mx-auto max-w-3xl">
+            <p className="text-[10px] uppercase tracking-eyebrow text-gold">wedding party</p>
+            <h2 className="mt-5 font-serif text-5xl lowercase leading-none text-sepia md:text-7xl">
+              by our side
+            </h2>
+          </div>
+
+          <div className="relative mx-auto mt-16 max-w-5xl md:mt-20">
+            <div className="pointer-events-none absolute bottom-0 left-1/2 top-0 hidden w-px -translate-x-1/2 bg-sepia/20 md:block" />
+            <div className="space-y-12 md:space-y-14">
+              {rows.map((row, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.55 }}
+                  transition={{ duration: 0.8, delay: index * 0.07, ease: [0.22, 1, 0.36, 1] }}
+                  className="grid items-center gap-8 md:grid-cols-[1fr_auto_1fr] md:gap-14"
+                >
+                  <WeddingPartyPerson person={row.bridal} align="" />
+                  <div className="mx-auto hidden h-16 w-px bg-sepia/25 md:block" />
+                  <WeddingPartyPerson person={row.groom} align="" />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+const WeddingPartyPerson = ({
+  person,
+  align,
+}: {
+  person?: { name: string; relation: string };
+  align: string;
+}) => (
+  <div className={`min-h-[5.25rem] text-center ${align}`}>
+    {person && (
+      <>
+        <p className="whitespace-nowrap font-serif text-[clamp(1.55rem,4.6vw,2.25rem)] leading-none tracking-[0.03em] text-sepia md:text-[clamp(1.7rem,2.65vw,2.65rem)]">
+          {person.name}
+        </p>
+        <p className="mt-3 font-serif text-xl leading-none text-sepia/75 md:text-2xl">
+          {person.relation}
+        </p>
+      </>
+    )}
+  </div>
+);
 /* ---------------- Travel ---------------- */
 const hotelBlocks = [
   {
@@ -991,9 +1086,10 @@ const Index = () => {
         <Schedule />
         
         <Venue />
-        <Registry />
         <Travel />
         <Airports />
+        <Registry />
+        <WeddingParty />
         <FAQ />
         <Closing />
         <Footer />
