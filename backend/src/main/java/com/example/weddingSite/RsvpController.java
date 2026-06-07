@@ -20,6 +20,7 @@ import java.util.Map;
 @CrossOrigin(origins = {
         "http://localhost:8080",
         "https://frontend-9965441404.us-central1.run.app",
+        "https://thejosephswedding.xyz",
 })
 public class RsvpController {
 
