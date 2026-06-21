@@ -4,6 +4,8 @@ import { ArrowLeft, FileUp, Lock, Plus, RefreshCw, Trash2, UserPlus } from "luci
 import { ADMIN_PASSCODE, API_BASE_URL } from "@/config";
 
 type MealChoice = "BEEF" | "CHICKEN" | "VEGETARIAN";
+type ResponseFilter = "ALL" | "ATTENDING" | "DECLINED" | "PENDING";
+type MealFilter = "ALL" | MealChoice | "NO_MEAL";
 
 type RsvpRecord = {
   id?: number;
@@ -72,6 +74,8 @@ const Admin = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [responseFilter, setResponseFilter] = useState<ResponseFilter>("ALL");
+  const [mealFilter, setMealFilter] = useState<MealFilter>("ALL");
 
   const sortedRsvps = useMemo(
     () =>
@@ -87,6 +91,25 @@ const Admin = () => {
         (a.partyName || "").localeCompare(b.partyName || "", undefined, { sensitivity: "base" }),
       ),
     [parties],
+  );
+
+  const filteredRsvps = useMemo(
+    () =>
+      sortedRsvps.filter((rsvp) => {
+        const matchesResponse =
+          responseFilter === "ALL" ||
+          (responseFilter === "ATTENDING" && rsvp.responded && rsvp.attending === true) ||
+          (responseFilter === "DECLINED" && rsvp.responded && rsvp.attending === false) ||
+          (responseFilter === "PENDING" && !rsvp.responded);
+
+        const matchesMeal =
+          mealFilter === "ALL" ||
+          (mealFilter === "NO_MEAL" && !rsvp.mealChoice) ||
+          rsvp.mealChoice === mealFilter;
+
+        return matchesResponse && matchesMeal;
+      }),
+    [sortedRsvps, responseFilter, mealFilter],
   );
 
   const totals = useMemo(
@@ -580,11 +603,52 @@ const Admin = () => {
           </div>
 
           <div className="min-w-0 border border-sepia/10 bg-background">
-            <div className="flex items-center justify-between border-b border-sepia/10 p-5">
-              <h2 className="font-serif text-3xl text-sepia">Current RSVPs</h2>
-              <p className="text-xs uppercase tracking-eyebrow text-sepia/45">
-                {sortedRsvps.length} total
-              </p>
+            <div className="flex flex-col gap-5 border-b border-sepia/10 p-5 xl:flex-row xl:items-end xl:justify-between">
+              <div>
+                <h2 className="font-serif text-3xl text-sepia">Current RSVPs</h2>
+                <p className="mt-1 text-xs uppercase tracking-eyebrow text-sepia/45">
+                  {filteredRsvps.length} shown / {sortedRsvps.length} total
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <label className="block">
+                  <span className="text-[10px] uppercase tracking-[0.22em] text-sepia/45">Response</span>
+                  <select
+                    value={responseFilter}
+                    onChange={(event) => setResponseFilter(event.target.value as ResponseFilter)}
+                    className="mt-2 min-h-10 w-full border border-sepia/15 bg-cream px-3 text-sm text-sepia outline-none transition-colors focus:border-gold"
+                  >
+                    <option value="ALL">All responses</option>
+                    <option value="ATTENDING">Attending</option>
+                    <option value="DECLINED">Not attending</option>
+                    <option value="PENDING">Pending</option>
+                  </select>
+                </label>
+                <label className="block">
+                  <span className="text-[10px] uppercase tracking-[0.22em] text-sepia/45">Meal</span>
+                  <select
+                    value={mealFilter}
+                    onChange={(event) => setMealFilter(event.target.value as MealFilter)}
+                    className="mt-2 min-h-10 w-full border border-sepia/15 bg-cream px-3 text-sm text-sepia outline-none transition-colors focus:border-gold"
+                  >
+                    <option value="ALL">All meals</option>
+                    <option value="BEEF">Beef</option>
+                    <option value="CHICKEN">Chicken</option>
+                    <option value="VEGETARIAN">Vegetarian</option>
+                    <option value="NO_MEAL">No meal</option>
+                  </select>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setResponseFilter("ALL");
+                    setMealFilter("ALL");
+                  }}
+                  className="mt-auto min-h-10 border border-sepia/15 px-4 text-xs uppercase tracking-[0.18em] text-sepia transition-colors hover:border-gold hover:text-gold"
+                >
+                  Clear
+                </button>
+              </div>
             </div>
 
             <div className="max-h-[780px] overflow-auto">
@@ -592,6 +656,8 @@ const Admin = () => {
                 <p className="p-5 text-sm text-sepia/60">
                   {loading ? "Loading RSVPs..." : "No RSVPs yet."}
                 </p>
+              ) : filteredRsvps.length === 0 ? (
+                <p className="p-5 text-sm text-sepia/60">No RSVPs match those filters.</p>
               ) : (
                 <table className="w-full min-w-[840px] border-collapse text-left">
                   <thead className="sticky top-0 bg-cream">
@@ -606,7 +672,7 @@ const Admin = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedRsvps.map((rsvp) => (
+                    {filteredRsvps.map((rsvp) => (
                       <tr key={rsvp.id ?? rsvp.guestName} className="border-b border-sepia/10">
                         <td className="px-5 py-4 font-serif text-lg text-sepia">{rsvp.guestName}</td>
                         <td className="px-5 py-4 text-sm text-sepia/65">{rsvp.partyName || "-"}</td>
