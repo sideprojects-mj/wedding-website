@@ -148,7 +148,8 @@ public class RsvpController {
 
     @GetMapping("getRsvp")
     public RsvpLookupResponse getRsvp(@RequestParam String name) {
-        return rsvpRepository.findFirstByGuestNameIgnoreCase(name)
+        String normalizedName = name == null ? "" : name.trim();
+        return rsvpRepository.findFirstByGuestNameIgnoreCase(normalizedName)
                 .map(rsvp -> {
                     RsvpParty party = rsvp.getParty();
                     PartyDto partyDto = party == null

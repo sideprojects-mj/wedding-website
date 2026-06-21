@@ -227,7 +227,7 @@ const Hero = () => {
 const scheduleItems = [
   {
     time: "3:30 PM-4:30 PM",
-    title: "Nuptual Mass",
+    title: "Nuptial Mass",
     venue: "Sts. Peter & Paul Catholic Church",
     address: "386 N Castell Avenue, New Braunfels, TX 78130",
     note: "Please arrive 15 minutes before Mass begins"

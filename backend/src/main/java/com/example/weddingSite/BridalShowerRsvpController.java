@@ -111,7 +111,8 @@ public class BridalShowerRsvpController {
 
     @GetMapping("getRsvp")
     public BridalShowerRsvpLookupResponse getRsvp(@RequestParam String name) {
-        return rsvpRepository.findFirstByGuestNameIgnoreCase(name)
+        String normalizedName = name == null ? "" : name.trim();
+        return rsvpRepository.findFirstByGuestNameIgnoreCase(normalizedName)
                 .map(rsvp -> new BridalShowerRsvpLookupResponse(BridalShowerRsvpDto.from(rsvp)))
                 .orElseGet(() -> new BridalShowerRsvpLookupResponse(null));
     }
