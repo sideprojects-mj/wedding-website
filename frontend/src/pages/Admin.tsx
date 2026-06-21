@@ -76,6 +76,7 @@ const Admin = () => {
   const [message, setMessage] = useState("");
   const [responseFilter, setResponseFilter] = useState<ResponseFilter>("ALL");
   const [mealFilter, setMealFilter] = useState<MealFilter>("ALL");
+  const [nameFilter, setNameFilter] = useState("");
 
   const sortedRsvps = useMemo(
     () =>
@@ -107,9 +108,15 @@ const Admin = () => {
           (mealFilter === "NO_MEAL" && !rsvp.mealChoice) ||
           rsvp.mealChoice === mealFilter;
 
-        return matchesResponse && matchesMeal;
+        const normalizedNameFilter = nameFilter.trim().toLowerCase();
+        const matchesName =
+          !normalizedNameFilter ||
+          (rsvp.guestName || "").toLowerCase().includes(normalizedNameFilter) ||
+          (rsvp.partyName || "").toLowerCase().includes(normalizedNameFilter);
+
+        return matchesResponse && matchesMeal && matchesName;
       }),
-    [sortedRsvps, responseFilter, mealFilter],
+    [sortedRsvps, responseFilter, mealFilter, nameFilter],
   );
 
   const totals = useMemo(
@@ -610,7 +617,16 @@ const Admin = () => {
                   {filteredRsvps.length} shown / {sortedRsvps.length} total
                 </p>
               </div>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <label className="block sm:col-span-2 xl:col-span-1">
+                  <span className="text-[10px] uppercase tracking-[0.22em] text-sepia/45">Search</span>
+                  <input
+                    value={nameFilter}
+                    onChange={(event) => setNameFilter(event.target.value)}
+                    placeholder="Name or party"
+                    className="mt-2 min-h-10 w-full border border-sepia/15 bg-cream px-3 text-sm text-sepia outline-none transition-colors placeholder:text-sepia/35 focus:border-gold"
+                  />
+                </label>
                 <label className="block">
                   <span className="text-[10px] uppercase tracking-[0.22em] text-sepia/45">Response</span>
                   <select
@@ -643,6 +659,7 @@ const Admin = () => {
                   onClick={() => {
                     setResponseFilter("ALL");
                     setMealFilter("ALL");
+                    setNameFilter("");
                   }}
                   className="mt-auto min-h-10 border border-sepia/15 px-4 text-xs uppercase tracking-[0.18em] text-sepia transition-colors hover:border-gold hover:text-gold"
                 >
