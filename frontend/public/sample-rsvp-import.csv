@@ -1,0 +1,5 @@
+partyName,guestName,email,invitedToRehearsalDinner
+Smith Party,John Smith,john@example.com,true
+Smith Party,Jane Smith,jane@example.com,true
+Johnson Party,Avery Johnson,avery@example.com,false
+Johnson Party,Riley Johnson,,false
