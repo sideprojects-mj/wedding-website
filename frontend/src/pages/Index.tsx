@@ -1133,13 +1133,14 @@ const Footer = () => (
 /* ---------------- Page ---------------- */
 const Index = () => {
   useEffect(() => {
-    document.title = "Mark & Grace · September 26, 2026";
+    document.title = "Mark Josephs Wedding & Grace Bascon Wedding · September 26, 2026";
   }, []);
 
   return (
     <SmoothScroll>
       <MinimalNav />
       <main className="bg-background overflow-x-clip">
+        <h1 className="sr-only">Mark Josephs Wedding and Grace Bascon Wedding | Josephs Wedding</h1>
         <Hero />
         <Schedule />
         
