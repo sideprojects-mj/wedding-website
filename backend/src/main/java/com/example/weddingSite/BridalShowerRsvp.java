@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
@@ -27,6 +30,10 @@ public class BridalShowerRsvp {
     private String message;
 
     private LocalDateTime submittedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "party_id")
+    private BridalShowerParty party;
 
     public Long getId() {
         return id;
@@ -78,5 +85,13 @@ public class BridalShowerRsvp {
 
     public void setSubmittedAt(LocalDateTime submittedAt) {
         this.submittedAt = submittedAt;
+    }
+
+    public BridalShowerParty getParty() {
+        return party;
+    }
+
+    public void setParty(BridalShowerParty party) {
+        this.party = party;
     }
 }

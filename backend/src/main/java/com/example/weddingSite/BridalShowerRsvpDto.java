@@ -9,9 +9,12 @@ public record BridalShowerRsvpDto(
         Boolean attending,
         Boolean responded,
         String message,
-        LocalDateTime submittedAt
+        LocalDateTime submittedAt,
+        Long partyId,
+        String partyName
 ) {
     public static BridalShowerRsvpDto from(BridalShowerRsvp rsvp) {
+        BridalShowerParty party = rsvp.getParty();
         return new BridalShowerRsvpDto(
                 rsvp.getId(),
                 rsvp.getGuestName(),
@@ -19,7 +22,9 @@ public record BridalShowerRsvpDto(
                 rsvp.getAttending(),
                 Boolean.TRUE.equals(rsvp.getResponded()) || Boolean.TRUE.equals(rsvp.getAttending()),
                 rsvp.getMessage(),
-                rsvp.getSubmittedAt()
+                rsvp.getSubmittedAt(),
+                party == null ? null : party.getId(),
+                party == null ? null : party.getPartyName()
         );
     }
 }

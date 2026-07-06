@@ -1,4 +1,5 @@
-guestName,email
-Grace Bascon,grace@example.com
-Olivia Flores,olivia@example.com
-Jane Smith,jane@example.com
+partyName,guestName,email
+Bascon Party,Grace Bascon,grace@example.com
+Bascon Party,Olivia Flores,olivia@example.com
+Smith Party,Jane Smith,jane@example.com
+Smith Party,Mary Smith,

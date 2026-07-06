@@ -9,4 +9,6 @@ public interface BridalShowerRsvpRepo extends JpaRepository<BridalShowerRsvp, Lo
     Optional<BridalShowerRsvp> findFirstByGuestNameIgnoreCase(String guestName);
 
     List<BridalShowerRsvp> findAllByOrderByGuestNameAsc();
+
+    List<BridalShowerRsvp> findAllByPartyIdOrderByGuestNameAsc(Long partyId);
 }
