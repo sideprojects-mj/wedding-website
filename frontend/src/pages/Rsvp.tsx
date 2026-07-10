@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Search, X } from "lucide-react";
 import { API_BASE_URL } from "@/config";
+import RegistryAfterRsvp from "@/components/RegistryAfterRsvp";
 
 type MealChoice = "BEEF" | "CHICKEN" | "VEGETARIAN";
 
@@ -353,9 +354,12 @@ const Rsvp = () => {
               <h2 className="mt-3 font-serif text-3xl text-sepia">{displayName}</h2>
 
               {status === "submitted" ? (
-                <p className="mx-auto mt-5 max-w-sm font-serif text-xl italic leading-relaxed text-sepia/75">
-                  Thank you. Your party RSVP has been saved.
-                </p>
+                <>
+                  <p className="mx-auto mt-5 max-w-sm font-serif text-xl italic leading-relaxed text-sepia/75">
+                    Thank you. Your party RSVP has been saved.
+                  </p>
+                  <RegistryAfterRsvp />
+                </>
               ) : (
                 <>
                   <p className="mx-auto mt-5 max-w-sm text-sm leading-relaxed text-sepia/65">

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Search, X } from "lucide-react";
 import { API_BASE_URL } from "@/config";
 import bridalShowerInvite from "@/assets/bridal-shower-invite.png";
+import RegistryAfterRsvp from "@/components/RegistryAfterRsvp";
 
 type BridalShowerRsvpRecord = {
   id?: number;
@@ -204,7 +205,12 @@ const BridalShowerRsvp = () => {
                 <div className="mt-6 border border-[#0a3475]/14 bg-[#fffaf0] p-5 text-center">
                   <p className="text-[10px] uppercase tracking-[0.32em] text-[#e85d91]">Invitation found</p>
                   <h2 className="mt-3 font-serif text-3xl text-[#0a3475]">{displayName}</h2>
-                  {status === "submitted" ? <p className="mx-auto mt-5 max-w-sm font-serif text-xl italic leading-relaxed text-[#0a3475]/72">Thank you. Your party RSVP has been saved.</p> : (
+                  {status === "submitted" ? (
+                    <>
+                      <p className="mx-auto mt-5 max-w-sm font-serif text-xl italic leading-relaxed text-[#0a3475]/72">Thank you. Your party RSVP has been saved.</p>
+                      <RegistryAfterRsvp variant="bridalShower" />
+                    </>
+                  ) : (
                     <>
                       <p className="mx-auto mt-5 max-w-sm text-sm leading-relaxed text-[#0a3475]/62">Please respond for each guest in your party.</p>
                       <div className="mt-7 space-y-4 text-left">
