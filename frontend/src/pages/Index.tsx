@@ -864,12 +864,12 @@ const hotelBlocks = [
   },
   {
     name: "Petit Cowboy",
-    discountCode: "Coming soon",
+    discountCode: "b841604",
     deadline: "Please book by August 11, 2026",
     address1: "8 minute drive from the Church",
-    address2: "19 minute drive the from the Venue",
-    note: "Coming Soon",
-    bookingUrl: "#",
+    address2: "19 minute drive from the Venue",
+    note: "A boutique stay with a playful Hill Country feel. We recommend Petit Cowboy for guests who want something charming, stylish, and close to the weekend events.",
+    bookingUrl: "https://hotels.cloudbeds.com/en/reservation/ouKt8o/?allotment_block_code=b841604&currency=usd&checkin=2026-09-25&checkout=2026-09-27",
   },
   {
     name: "Courtyard by Marriott",
