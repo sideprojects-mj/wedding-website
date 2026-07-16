@@ -188,7 +188,7 @@ const BridalShowerRsvp = () => {
             <div className="relative text-center">
               <h1 className="mt-5 font-serif text-5xl uppercase leading-[0.9] tracking-[0.18em] text-[#0a3475] md:text-6xl">Couples<br />Shower</h1>
               <div className="mx-auto mt-5 flex max-w-xs items-center gap-4 text-[#0a3475]"><span className="h-px flex-1 bg-[#0a3475]/45" /><span className="text-[10px] uppercase tracking-[0.28em]">RSVP</span><span className="h-px flex-1 bg-[#0a3475]/45" /></div>
-              <p className="mx-auto mt-5 max-w-md font-serif text-xl italic leading-relaxed text-[#0a3475]/72 md:text-2xl">Enter your name as it appears on your invitation, then let us know who in your party can celebrate with us.</p>
+              <p className="mx-auto mt-5 max-w-md font-serif text-xl italic leading-relaxed text-[#0a3475]/72 md:text-2xl">Enter your full name, then let us know who in your party can celebrate with us.</p>
             </div>
 
             <div className="relative mt-9 border border-[#0a3475]/18 bg-white/62 p-4 shadow-[0_20px_55px_-40px_rgba(10,52,117,0.85)] backdrop-blur-sm md:p-5">
