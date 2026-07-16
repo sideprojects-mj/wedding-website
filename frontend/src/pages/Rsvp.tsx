@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Search, X } from "lucide-react";
 import { API_BASE_URL } from "@/config";
 import RegistryAfterRsvp from "@/components/RegistryAfterRsvp";
+import { toast } from "@/hooks/use-toast";
 
 type MealChoice = "BEEF" | "CHICKEN" | "VEGETARIAN";
 
@@ -59,6 +60,12 @@ const confettiPieces = Array.from({ length: 90 }, (_, index) => ({
             ? "hsl(38 56% 74%)"
             : "hsl(var(--cream))",
 }));
+
+const showRequiredFieldsToast = () =>
+  toast({
+    title: "Not all required fields were pressed",
+    description: "Please make a selection for each required RSVP option.",
+  });
 
 const ConfettiRain = () => (
   <div className="pointer-events-none fixed inset-0 z-[80] overflow-hidden">
@@ -206,6 +213,7 @@ const Rsvp = () => {
 
     if (hasMissingResponse) {
       setError("Please choose yes or no for each guest in your party.");
+      showRequiredFieldsToast();
       return;
     }
 
@@ -215,6 +223,7 @@ const Rsvp = () => {
 
     if (hasMissingMeal) {
       setError("Please choose a meal for each guest who is attending.");
+      showRequiredFieldsToast();
       return;
     }
 
@@ -226,6 +235,7 @@ const Rsvp = () => {
 
     if (hasMissingRehearsalResponse) {
       setError("Please answer the rehearsal dinner RSVP for each invited guest.");
+      showRequiredFieldsToast();
       return;
     }
 

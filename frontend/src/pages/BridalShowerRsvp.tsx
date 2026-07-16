@@ -5,6 +5,7 @@ import { ArrowLeft, Check, Search, X } from "lucide-react";
 import { API_BASE_URL } from "@/config";
 import bridalShowerInvite from "@/assets/bridal-shower-invite.png";
 import RegistryAfterRsvp from "@/components/RegistryAfterRsvp";
+import { toast } from "@/hooks/use-toast";
 
 type BridalShowerRsvpRecord = {
   id?: number;
@@ -30,6 +31,12 @@ type LookupResponse = {
 };
 
 type LookupStatus = "idle" | "loading" | "found" | "missing" | "error" | "submitted";
+
+const showRequiredFieldsToast = () =>
+  toast({
+    title: "Not all required fields were pressed",
+    description: "Please make a selection for each required RSVP option.",
+  });
 
 const BridalShowerRsvp = () => {
   const [name, setName] = useState("");
@@ -110,6 +117,7 @@ const BridalShowerRsvp = () => {
     const hasMissingResponse = guests.some((guest) => responses[guest.id!] === null || responses[guest.id!] === undefined);
     if (hasMissingResponse) {
       setError("Please choose yes or no for each guest in your party.");
+      showRequiredFieldsToast();
       return;
     }
 
